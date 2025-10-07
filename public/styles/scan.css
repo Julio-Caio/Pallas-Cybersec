@@ -1,0 +1,255 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+    --background: #0b0d17;
+    --foreground: #f8fafc;
+    --muted-foreground: #94a3b8;
+    --border: rgba(59, 130, 246, 0.3);
+    --primary: #3b82f6;
+    --primary-foreground: #2563eb;
+}
+
+.michroma-regular {
+  font-family: "Michroma", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+body {
+  background: #0b0d17;
+  color: var(--foreground);
+  font-family: "Inter", sans-serif;
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.app {
+  display: flex;
+  width: 100%;
+}
+
+.sidebar {
+  background: #111827;
+  border-right: 1px solid rgba(59, 130, 246, 0.3);
+  width: 14em;
+  transition: width 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 100;
+}
+
+.sidebar.closed {
+  width: 0;
+  overflow: hidden;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.logo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #60a5fa;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.sidebar-nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 0.5rem;
+}
+
+.nav-item {
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.5rem;
+  transition: background 0.2s;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255);
+  color: #111827;
+  font-weight: 600;
+  transition: all 0.3s ease-in;
+  transform: scale(1.02);
+}
+
+.nav-item.active {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.nav-item:last-child {
+    margin-top: auto;
+}
+
+.sidebar-footer {
+  border-top: 1px solid rgba(59, 130, 246, 0.3);
+  padding: 0.8rem;
+  font-size: 0.8rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+/* OVERLAY (mobile) */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 50;
+}
+
+.overlay.active {
+  display: block;
+}
+
+/* CONTENT */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.main-container {
+  text-align: center;
+  max-width: 700px;
+  padding: 2rem;
+}
+
+.logo-center h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  letter-spacing: 2px;
+  color: var(--foreground)
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #a1a1aa;
+  margin-bottom: 1.5rem;
+}
+
+/* FORM */
+.scan-form {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.scan-form input {
+  width: 100%;
+  padding: 1rem 3rem 1rem 1.2rem;
+  border-radius: 2rem;
+  border: 2px solid #3b82f6;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 1rem;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  outline: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.scan-form input:focus {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+}
+
+.scan-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #3b82f6;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.scan-btn:hover {
+  background: #2563eb;
+}
+
+/* QUICK ACTIONS */
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+}
+
+.action-btn {
+  background: transparent;
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  color: #93c5fd;
+  padding: 0.6rem 1.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.action-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+/* INFO */
+.info-text {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+  }
+
+  .sidebar.closed {
+    transform: translateX(-100%);
+  }
+
+  #toggleSidebar {
+    position: fixed;
+    left: 1rem;
+    top: 1rem;
+    z-index: 120;
+    font-size: 1.5rem;
+  }
+}

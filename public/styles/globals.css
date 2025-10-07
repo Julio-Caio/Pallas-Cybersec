@@ -11,6 +11,12 @@
   --gradient-green: linear-gradient(90deg,rgba(0, 212, 146, 1) 0%, rgba(22, 78, 61, 1) 71%);
 }
 
+.michroma-regular {
+  font-family: "Michroma", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -46,7 +52,7 @@ header .container {
 }
 
 .header .logo {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--primary-foreground)
 }
