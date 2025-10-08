@@ -1,5 +1,4 @@
 :root {
-
   --background: linear-gradient(90deg, rgba(22, 42, 75, 1) 0%, rgba(0, 0, 0, 1) 50%);
   --black-background: #121212;
   --foreground: #171717;
@@ -69,7 +68,7 @@ header .container {
 }
 
 .nav a:hover {
-  color: var(--primary);
+  color: var(--);
 }
 
 /* BUTTONS */
