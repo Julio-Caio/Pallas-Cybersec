@@ -1,0 +1,46 @@
+:root {
+  --background: linear-gradient(90deg, rgba(22, 42, 75, 1) 0%, rgba(0, 0, 0, 1) 50%);
+  --black-background: #121212;
+  --foreground: #171717;
+  --primary: #0d6efd;
+  --primary-foreground: #fff;
+  --border: #e5e7eb;
+  --muted-foreground: #555;
+  --radius: .4em;
+  --gradient-green: linear-gradient(90deg,rgba(0, 212, 146, 1) 0%, rgba(22, 78, 61, 1) 71%);
+}
+
+header {
+  margin-bottom: 2em;
+  display: flex;
+  justify-content:space-between ;
+  align-items: center;
+}
+
+header h2 {
+  font-size: 1.4rem;
+  color: var(--primary-foreground);
+  font-weight: 700;
+}
+
+/* Cards */
+.card {
+  background: var(--foreground);
+  transition: transform 0.2s;
+  height: 5em;
+  width: 20em;
+}
+
+.card .card-header {
+  background: var(--primary);
+  font-weight: 600;
+}
+
+.card .card-body {
+  padding: 2.2em;
+}
+
+.card .card-body h2 {
+  font-size: 2rem;
+  font-weight: 700;
+}

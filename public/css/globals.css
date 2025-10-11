@@ -68,7 +68,7 @@ header .container {
 }
 
 .nav a:hover {
-  color: var(--);
+  color: var(--primary);
 }
 
 /* BUTTONS */
@@ -80,7 +80,7 @@ header .container {
   cursor: pointer;
 }
 
-.btn-outline:hover {
+.btn-outline:hover, .btn-outline a:hover {
   background: var(--primary);
   color: var(--primary-foreground);
   border-color: var(--primary-foreground);
