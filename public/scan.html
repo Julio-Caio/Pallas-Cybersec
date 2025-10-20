@@ -12,7 +12,6 @@
     </style>
 
     <link rel="stylesheet" href="css/scan.css" />
-    <script src="js/scan.js" defer></script>
 </head>
 
 <body>
@@ -25,8 +24,8 @@
         <aside id="sidebar" class="sidebar">
             <div class="sidebar-header">
                 <h2 class="logo michroma-regular">Pallas</h1>
-                    <button class="icon-btn" id="toggleSidebar">
-                        <span class="icon">✖</span>
+                    <button class="icon-btn" id="toggleSidebar" onclick="toggleSidebar()">
+                        <span class="icon"><i class="bi bi-list"></i></span>
                     </button>
             </div>
             <nav class="sidebar-nav">
@@ -49,7 +48,7 @@
 
                 <form id="scanForm" class="scan-form">
                     <input id="scanInput" type="text" placeholder="Digite um domínio, IP ou URL..." />
-                    <button type="submit" class="scan-btn"><i class="bi bi-search"></i></button>
+                    <button type="submit" id="scan-btn" class="scan-btn"><i class="bi bi-search"></i></button>
                 </form>
 
                 <div class="quick-actions">
@@ -71,6 +70,8 @@
             </div>
         </main>
     </div>
+    <script src="js/scan.js" defer></script>
+    <script type="module" src="js/ips.js"></script>
 </body>
 
 </html>

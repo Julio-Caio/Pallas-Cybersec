@@ -10,6 +10,7 @@
     --muted-foreground: #94a3b8;
     --border: rgba(59, 130, 246, 0.3);
     --primary: #3b82f6;
+    --gradient-green: linear-gradient(90deg,rgba(0, 212, 146, 1) 0%, rgba(22, 78, 61, 1) 71%);
     --primary-foreground: #2563eb;
 }
 
@@ -41,6 +42,7 @@ body {
 
 h2 {
     text-align: center;
-    color: var(--primary);
+    color: var(--primary-foreground);
+    margin-top: 1em;
     margin-bottom: 1em;
 }

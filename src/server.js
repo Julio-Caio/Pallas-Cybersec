@@ -2,9 +2,10 @@ import "express-async-errors";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import router from "./routes.js";
+import router from "./routes/shodan.js";
 
 const server = express();
+const PORT = process.env.PORT || 3000;
 
 server.use(morgan("dev"));
 
@@ -23,7 +24,7 @@ server.use(express.json());
 server.use(router);
 
 server.listen(3000, () => {
-  console.log("Server is running on port 3000");
+  console.log(`Server is running on port ${PORT}`);
 });
 
 export default server;

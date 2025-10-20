@@ -1,17 +1,21 @@
 const sidebar = document.getElementById("sidebar");
+const sidebarNav = document.querySelector('.sidebar-nav')
 const toggleBtn = document.getElementById("toggleSidebar");
-const overlay = document.getElementById("overlay");
 const form = document.getElementById("scanForm");
 const input = document.getElementById("scanInput");
 const quickButtons = document.querySelectorAll(".action-btn");
 
-toggleBtn.addEventListener("click", () => {
-  const isOpen = sidebar.classList.contains("open");
-  sidebar.classList.toggle("open", !isOpen);
-  sidebar.classList.toggle("closed", isOpen);
-  toggleBtn.innerHTML = isOpen ? "☰" : "✖";
-});
 
+function toggleSidebar()
+{
+   if (sidebarNav.classList.contains('active')) {
+       sidebarNav.classList.remove('active')
+   }
+    else {
+        sidebarNav.classList.add('active');
+        
+    }
+}
 
 // Ação do formulário
 form.addEventListener("submit", (e) => {
