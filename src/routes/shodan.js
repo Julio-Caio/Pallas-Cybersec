@@ -11,7 +11,7 @@ class HttpError extends Error {
 }
 
 /* InternetDB endpoint */
-router.get("/search/ip", async (req, res, next) => {
+router.get("/api/internetdb/:ip", async (req, res, next) => {
   const ip = req.params.ip;
 
   try {

@@ -57,7 +57,7 @@ function generateTableBody(array) {
 
 window.addEventListener("load", async () => {
   try {
-    const data = await fetchInternetDB("200.129.77.237");
+    const data = await fetchInternetDB("8.8.8.8");
 
     // InternetDB retorna um objeto, transformamos em array para a tabela
     const rows = [data];
@@ -70,6 +70,6 @@ window.addEventListener("load", async () => {
     tableDiv.appendChild(table);
   } catch (err) {
     console.error("Erro ao carregar dados do InternetDB:");
-    tableDiv.innerHTML = `<p class="text-danger">Falha ao carregar dados, verifique sua conexão com à Internet</p>`;
+    tableDiv.innerHTML = `<p class="text-danger">Falha ao obter dados, tente novamente</p>`;
   }
 });
