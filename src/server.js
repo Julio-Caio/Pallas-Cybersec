@@ -2,7 +2,7 @@ import "express-async-errors";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
-import router from "./routes/shodan.js";
+import router from "./routes/routes.js";
 
 const server = express();
 const PORT = process.env.PORT || 3000;

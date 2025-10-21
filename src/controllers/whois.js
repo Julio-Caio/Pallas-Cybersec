@@ -1,10 +1,5 @@
 const ipWhoisBaseURL = 'https://ipwho.is';
 
-
-/**
- * Resolve o IP de um domínio (DNS A record)
- */
-
 export async function getPublicIP() {
   try {
     const res = await fetch("https://api.ipify.org?format=json");
@@ -40,7 +35,7 @@ export async function getDomainNameServer(domain) {
 }
 
 /**
- * Consulta dados WHOIS e geolocalização de um IP
+ * Consulta dados WHOIS
  */
 export function getIPWhoisInfo(baseURL, ip) {
   return fetch(`${baseURL}/${ip}`)
@@ -97,24 +92,6 @@ export async function getCoordinates(input) {
     }
   } catch (err) {
     console.error('Erro ao obter coordenadas:', err);
-    return null;
-  }
-}
-
-export async function getCoordinatesMyIP(ip) {
-  try {
-    const geoInfo = await getIPWhoisInfo(ipWhoisBaseURL, ip);
-    
-    if (geoInfo.latitude != null && geoInfo.longitude != null) {
-      return {
-        latitude: geoInfo.latitude,
-        longitude: geoInfo.longitude
-      };
-    } else {
-      throw new Error('Coordenadas não disponíveis para este IP.');
-    }
-  } catch (err) {
-    console.error('Erro ao obter coordenadas do meu IP:', err);
     return null;
   }
 }
