@@ -1,5 +1,6 @@
 import express from "express";
 import { getInternetDB } from "../controllers/shodan_modules/internetdb.js";
+import { getPublicIP, getDomainNameServer, getIPWhoisInfo } from "../controllers/whois.js";
 
 const router = express.Router();
 
@@ -9,6 +10,30 @@ class HttpError extends Error {
     this.code = code;
   }
 }
+
+router.get("/api/my-ip", (req, res) => {
+  getPublicIP()
+    .then(ip => res.status(200).json({ ip }))
+    .catch(err => {
+      return res.status(500).json({ message: "Failed to get public IP", error: err.message });
+    });
+});
+
+/* Whois endpoint */
+router.get("/api/whois/geo/:domain", async (req, res, next) => {
+  const domain = req.params.domain;
+  const ip = await getDomainNameServer(domain);
+
+  try {
+    // Placeholder for actual whois fetching logic
+    const data = await getIPWhoisInfo(ipWhoisBaseURL, ip);
+    return res.status(200).json(data);
+  } catch (err) {
+    return next(
+      new HttpError(`Failed to fetch WHOIS data for domain ${domain}: ${err.message}`, 500)
+    );
+  }
+});
 
 /* InternetDB endpoint */
 router.get("/api/internetdb/:ip", async (req, res, next) => {

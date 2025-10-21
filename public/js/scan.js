@@ -17,14 +17,21 @@ function toggleSidebar()
     }
 }
 
+function validateIP(ip) {
+  const ipRegex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+  return ipRegex.test(ip);
+}
+
 // Ação do formulário
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   const target = input.value.trim();
-  if (!target) {
-    alert("Digite um domínio, IP ou URL para escanear.");
+
+  if(!validateIP(target)) {
+    alert("⚠️ Endereço IP inválido!");
     return;
   }
+  
   console.log("[Scanning:", target);
   alert(`🔍 Iniciando scan em: ${target}`);
 });
