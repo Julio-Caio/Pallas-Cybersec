@@ -1,0 +1,85 @@
+{
+  "domains": [
+    {
+      "value": "ifpb.edu.br",
+      "address": "200.129.74.16",
+      "ports": ["80", "443", "444"]
+    },
+    {
+      "value": "pdfmania.com.br",
+      "address": "—",
+      "ports": ["80", "443"]
+    },
+    {
+      "value": "laced.com.br",
+      "address": "—",
+      "ports": ["80", "443"]
+    }
+  ],
+  "hostnames": [
+    {
+      "value": "cti.cabedelo.ifpb.edu.br",
+      "address": "200.129.79.85",
+      "ports": ["80", "443", "444"],
+      "domain": "ifpb.edu.br"
+    },
+    {
+      "value": "ava2020.ead.ifpb.edu.br",
+      "address": "200.129.74.16",
+      "ports": ["80", "443", "444"],
+      "domain": "ifpb.edu.br"
+    },
+    {
+      "value": "ns1.ifpb.edu.br",
+      "address": "200.129.77.3",
+      "ports": ["80", "443", "444"],
+      "domain": "ifpb.edu.br"
+    },
+    {
+      "value": "pdfmania.com.br",
+      "address": "159.203.79.141",
+      "ports": ["80", "443"],
+      "domain": "pdfmania.com.br"
+    },
+    {
+      "value": "azul.laced.com.br",
+      "address": "200.129.77.16",
+      "ports": ["80", "443"],
+      "domain": "laced.com.br"
+    }
+  ],
+  "IPs": [
+    {
+      "id": 1,
+      "ip_str": "200.129.79.85",
+      "country": "BR",
+      "city": "João Pessoa",
+      "isp": "Rede Nacional de Ensino e Pesquisa"
+    },
+    {
+      "id": 2,
+      "ip_str": "200.129.77.3",
+      "country": "BR",
+      "city": "Campina Grande",
+      "isp": "Rede Nacional de Ensino e Pesquisa"
+    }
+  ],
+  "Technologies": [
+    {
+      "product": "Apache httpd",
+      "version": "2.4.46"
+    },
+    {
+      "product": "nginx",
+      "version": "1.18.0"
+    },
+    {
+      "product": "AWS ELB",
+      "version": "—"
+    },
+    {
+      "product": "MinIO Server",
+      "version": "—"
+    }
+  ]
+}

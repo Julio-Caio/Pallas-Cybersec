@@ -1,0 +1,190 @@
+:root {
+  --background: linear-gradient(90deg, rgba(22, 42, 75, 1) 0%, rgba(0, 0, 0, 1) 50%);
+  --black-background: #121212;
+  --foreground: #171717;
+  --primary: #0d6efd;
+  --primary-foreground: #fff;
+  --border: #e5e7eb;
+  --muted-foreground: #555;
+  --radius: .1em;
+  --gradient-green: linear-gradient(90deg,rgba(0, 212, 146, 1) 0%, rgba(22, 78, 61, 1) 71%);
+}
+
+.michroma-regular {
+  font-family: "Michroma", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.bg-background {
+  background: var(--background)
+}
+.text-muted-foreground {
+  color: #6c757d;
+}
+
+.nav-brand {
+  margin-right: 2em;
+  text-decoration: none;
+  color: #80ded9;
+}
+
+.nav-brand img {
+  width: 3.2em;
+  height: 3.2em;
+}
+
+main {
+  flex: 1;
+  min-height: 100vh;
+}
+
+input[type="search"] {
+  width: 60%;
+  background-color: #4d4d4dab;
+  border: none;
+}
+
+input[type="search"]::placeholder {
+  color: whitesmoke;
+}
+
+input[type="search"]:focus {
+  background-color: #252525ec;
+  color: #80ded9;
+  border: 1px solid #80ded9;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.icon-primary {
+  color: #0d6efd;
+}
+.icon-muted {
+  color: #adb5bd;
+}
+.icon-destructive {
+  color: #dc3545;
+}
+.icon-warning {
+  color: #ffc107;
+}
+.bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 200px;
+}
+.bar div {
+  width: 100%;
+  background: rgba(13, 110, 253, 0.2);
+  border-radius: 0.25rem;
+  position: relative;
+}
+.bar div .bar-inner {
+  background: #0d6efd;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+}
+.pulse {
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.card {
+  background: #252525;
+  font-weight: bold;
+  border: none;
+  box-shadow: 1px 0.8px 0.2em #9cebe7;
+}
+
+.card:hover {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-header {
+  background: #80ded9;
+}
+
+.card-body {
+  color: #80ded9;
+  min-height: 4em;
+}
+
+.card-body small {
+  font-size: 0.875rem;
+  color: #868e96;
+}
+
+.card-body.card-hour::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("../images/bg/sao-paulo-bg.jpg");
+  z-index: -1;
+}
+
+.card-body .d-flex {
+  border: 1px solid #ccc;
+  padding: 1.05em;
+  border-radius: 0.4em;
+  transition: all 0.2s ease-in-out;
+}
+
+.card-body .d-flex:hover {
+  background: whitesmoke;
+  color: #252525;
+  cursor: pointer;
+}
+
+.card-body .d-flex .badge.pulse {
+  border-color: #0d6efd;
+}
+
+.btn-dark:hover {
+  background: whitesmoke;
+  color: #000000;
+}
+
+.bar {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 18em;
+}
+
+canvas {
+  max-width: 100%;
+  max-height: 100%;
+  padding-bottom: 0.8em;
+  font-style: normal;
+}
