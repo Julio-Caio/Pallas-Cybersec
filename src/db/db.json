@@ -1,85 +1,39 @@
 {
-  "domains": [
+  "domain": "ifpb.edu.br",
+  "records": [
+    { "name": "ifpb.edu.br", "type": "A", "value": "200.129.77.237" },
+    { "name": "ifpb.edu.br", "type": "MX", "value": "alt1.aspmx.l.google.com" },
+    { "name": "ifpb.edu.br", "type": "MX", "value": "alt2.aspmx.l.google.com" },
+    { "name": "ifpb.edu.br", "type": "MX", "value": "aspmx.l.google.com" },
+    { "name": "ifpb.edu.br", "type": "MX", "value": "aspmx2.googlemail.com" },
+    { "name": "ifpb.edu.br", "type": "MX", "value": "aspmx3.googlemail.com" },
+    { "name": "ifpb.edu.br", "type": "NS", "value": "ns1.ifpb.edu.br" },
+    { "name": "ifpb.edu.br", "type": "NS", "value": "ns2.ifpb.edu.br" },
+    { "name": "ifpb.edu.br", "type": "SOA", "value": "ns1.ifpb.edu.br" },
     {
-      "value": "ifpb.edu.br",
-      "address": "200.129.74.16",
-      "ports": ["80", "443", "444"]
+      "name": "ifpb.edu.br",
+      "type": "TXT",
+      "value": "_globalsign-domain-verification=5cxzCOJZFA9HxGs6n6WE5ORXrdPioJ8wHTsw_H9Nap"
     },
     {
-      "value": "pdfmania.com.br",
-      "address": "—",
-      "ports": ["80", "443"]
+      "name": "ifpb.edu.br",
+      "type": "TXT",
+      "value": "_globalsign-domain-verification=dQG9RhugDFD1p5suUQj1ky85xzEOilMfxSr2tuM_yY"
     },
-    {
-      "value": "laced.com.br",
-      "address": "—",
-      "ports": ["80", "443"]
-    }
+    { "name": "academico.ifpb.edu.br", "type": "A", "value": "200.129.77.8" },
+    { "name": "ava.ifpb.edu.br", "type": "CNAME", "value": "alb-ead-74462806.sa-east-1.elb.amazonaws.com" },
+    { "name": "ava2017.ead.ifpb.edu.br", "type": "A", "value": "200.129.74.13" },
+    { "name": "cti.cabedelo.ifpb.edu.br", "type": "A", "value": "200.129.79.85" },
+    { "name": "devel.ifpb.edu.br", "type": "A", "value": "200.129.77.26" },
+    { "name": "labmicro.cabedelo.ifpb.edu.br", "type": "A", "value": "200.129.79.85" },
+    { "name": "suap.ifpb.edu.br", "type": "CNAME", "value": "alb-dgti-1687892527.sa-east-1.elb.amazonaws.com" },
+    { "name": "v077237.ifpb.edu.br", "type": "A", "value": "200.129.77.237" },
+    { "name": "www.ifpb.edu.br", "type": "CNAME", "value": "v077237.ifpb.edu.br" }
   ],
-  "hostnames": [
-    {
-      "value": "cti.cabedelo.ifpb.edu.br",
-      "address": "200.129.79.85",
-      "ports": ["80", "443", "444"],
-      "domain": "ifpb.edu.br"
-    },
-    {
-      "value": "ava2020.ead.ifpb.edu.br",
-      "address": "200.129.74.16",
-      "ports": ["80", "443", "444"],
-      "domain": "ifpb.edu.br"
-    },
-    {
-      "value": "ns1.ifpb.edu.br",
-      "address": "200.129.77.3",
-      "ports": ["80", "443", "444"],
-      "domain": "ifpb.edu.br"
-    },
-    {
-      "value": "pdfmania.com.br",
-      "address": "159.203.79.141",
-      "ports": ["80", "443"],
-      "domain": "pdfmania.com.br"
-    },
-    {
-      "value": "azul.laced.com.br",
-      "address": "200.129.77.16",
-      "ports": ["80", "443"],
-      "domain": "laced.com.br"
-    }
-  ],
-  "IPs": [
-    {
-      "id": 1,
-      "ip_str": "200.129.79.85",
-      "country": "BR",
-      "city": "João Pessoa",
-      "isp": "Rede Nacional de Ensino e Pesquisa"
-    },
-    {
-      "id": 2,
-      "ip_str": "200.129.77.3",
-      "country": "BR",
-      "city": "Campina Grande",
-      "isp": "Rede Nacional de Ensino e Pesquisa"
-    }
-  ],
-  "Technologies": [
-    {
-      "product": "Apache httpd",
-      "version": "2.4.46"
-    },
-    {
-      "product": "nginx",
-      "version": "1.18.0"
-    },
-    {
-      "product": "AWS ELB",
-      "version": "—"
-    },
-    {
-      "product": "MinIO Server",
-      "version": "—"
-    }
+  "isp": [
+    { "name": "Rede Nacional de Ensino e Pesquisa" },
+    { "name": "DigitalOcean, LLC" },
+    { "name": "TELY Ltda." },
+    { "name": "Amazon.com, Inc." }
   ]
 }

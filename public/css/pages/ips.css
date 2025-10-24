@@ -5,13 +5,21 @@
 }
 
 :root {
-    --background: linear-gradient(90deg, rgba(22, 42, 75, 1) 0%, rgba(0, 0, 0, 1) 50%);    
-    --foreground: #f8fafc;
-    --muted-foreground: #94a3b8;
-    --border: rgba(59, 130, 246, 0.3);
-    --primary: #3b82f6;
-    --gradient-green: linear-gradient(90deg,rgba(0, 212, 146, 1) 0%, rgba(22, 78, 61, 1) 71%);
-    --primary-foreground: #2563eb;
+  --background: linear-gradient(
+    90deg,
+    rgba(22, 42, 75, 1) 0%,
+    rgba(0, 0, 0, 1) 50%
+  );
+  --foreground: #f8fafc;
+  --muted-foreground: #94a3b8;
+  --border: rgba(59, 130, 246, 0.3);
+  --primary: #3b82f6;
+  --gradient-green: linear-gradient(
+    90deg,
+    rgba(0, 212, 146, 1) 0%,
+    rgba(22, 78, 61, 1) 71%
+  );
+  --primary-foreground: #2563eb;
 }
 
 .michroma-regular {
@@ -28,21 +36,20 @@ body {
 
 /* icons */
 .bi {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .container.my-4 {
-    margin-top: 3rem;
-    margin-bottom: 1.5rem;
-    min-height: 20vh;
-    text-align: center;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  min-height: 20vh;
+  text-align: center;
 }
 
 h2 {
-    text-align: center;
-    color: var(--primary-foreground);
-    margin-top: 1em;
-    margin-bottom: 1em;
+  text-align: center;
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 /* Spinner */
@@ -62,7 +69,6 @@ h2 {
   height: 4rem;
   border-width: 0.4rem;
 }
-
 
 .spinner-container.active {
   display: flex; /* aparece quando está "ativo" */

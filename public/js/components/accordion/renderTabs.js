@@ -151,7 +151,7 @@ function renderTabsAndAccordions(jsonData, containerId) {
   container.appendChild(tabButtonsDiv);
   container.appendChild(tabContainer);
 
-  // 🔹 Funções auxiliares
+  // Funções auxiliares
   function openTab(tabName) {
     const contents = container.querySelectorAll(".tabcontent");
     const buttons = container.querySelectorAll(".tablinks");

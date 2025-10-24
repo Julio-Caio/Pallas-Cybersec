@@ -1,3 +1,5 @@
+import { isIPAddress } from "../../src/controllers/validIP.js";
+
 const tableDiv = document.querySelector(".table-container");
 const spinner = document.querySelector(".spinner-container");
 
@@ -17,11 +19,11 @@ async function fetchInternetDB(ip) {
   toggleSpinner(true); // ativar spinner
 
   try {
-    if (!validateIP(ip)) throw new Error("Endereço IP inválido");
+    if (!isIPAddress(ip)) throw new Error("Endereço IP inválido");
 
     const resp = await fetch(`http://localhost:3000/api/internetdb/${ip}`);
     if (!resp.ok) throw new Error(`Erro HTTP ${resp.status}`);
-    toggleSpinner(false)
+    toggleSpinner(false);
     return await resp.json();
   } catch (err) {
     throw err;
@@ -29,7 +31,15 @@ async function fetchInternetDB(ip) {
 }
 
 const table = document.createElement("table");
-table.classList.add("table", "table-dark", "table-striped", "table-hover", "table-bordered", "align-middle", "text-center");
+table.classList.add(
+  "table",
+  "table-dark",
+  "table-striped",
+  "table-hover",
+  "table-bordered",
+  "align-middle",
+  "text-center"
+);
 table.style.width = "100%";
 
 const thead = document.createElement("thead");
@@ -51,7 +61,9 @@ function generateTableBody(array) {
     for (const [key, value] of Object.entries(obj)) {
       const td = document.createElement("td");
       if (Array.isArray(value)) {
-        td.innerHTML = value.map(v => `<span class="badge bg-primary me-1">${v}</span>`).join("");
+        td.innerHTML = value
+          .map((v) => `<span class="badge bg-primary me-1">${v}</span>`)
+          .join("");
       } else {
         td.innerText = value ?? "-";
       }

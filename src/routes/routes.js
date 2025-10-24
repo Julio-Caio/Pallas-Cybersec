@@ -1,6 +1,6 @@
 import express from "express";
 import { getInternetDB } from "../controllers/shodan_modules/internetdb.js";
-import { getPublicIP, getDomainNameServer, getIPWhoisInfo } from "../controllers/whois.js";
+import { getPublicIP, getDomainNameServer, getIPWhoisInfo } from "../helpers/whois.js";
 
 const router = express.Router();
 
