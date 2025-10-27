@@ -1,0 +1,53 @@
+{
+  "ips": [
+    {
+      "uuid": 1,
+      "addr": "200.129.79.85",
+      "isp": "Rede Nacional de Ensino e Pesquisa",
+      "country": "BR",
+      "port": [80, 443, 444]
+    },
+    {
+      "uuid": 2,
+      "addr": "200.129.74.16",
+      "isp": "Rede Nacional de Ensino e Pesquisa",
+      "country": "BR",
+      "port": [80, 443]
+    },
+    {
+      "uuid": 3,
+      "addr": "200.129.77.3",
+      "isp": "Rede Nacional de Ensino e Pesquisa",
+      "country": "BR",
+      "port": [80]
+    },
+    {
+      "uuid": 4,
+      "addr": "200.129.74.12",
+      "isp": "Rede Nacional de Ensino e Pesquisa",
+      "country": "BR",
+      "port": [80, 8080]
+    },
+    {
+      "uuid": 5,
+      "addr": "159.203.79.141",
+      "isp": "DigitalOcean, LLC",
+      "country": "US",
+      "port": [80, 443]
+    },
+    {
+      "uuid": 6,
+      "addr": "200.129.77.16",
+      "isp": "TELY Ltda.",
+      "country": "BR",
+      "port": [80, 443, 22]
+    },
+    {
+      "uuid": 7,
+      "addr": "200.129.79.57",
+      "isp": "Amazon.com, Inc.",
+      "country": "US",
+      "port": [80, 443]
+    }
+  ]
+}

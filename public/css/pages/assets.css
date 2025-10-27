@@ -190,13 +190,6 @@ input[type="search"]:focus {
   height: 18em;
 }
 
-canvas {
-  max-width: 100%;
-  max-height: 100%;
-  padding-bottom: 0.8em;
-  font-style: normal;
-}
-
 .container {
   display: flex;
   justify-content: center;
@@ -206,8 +199,9 @@ canvas {
 }
 
 .whois-info {
-  position: absolute;
   z-index: 2;
+  position: absolute;
+  top: 10em;
   display: flex;
   flex-direction: column;
   background-color: #101a2b;
@@ -215,10 +209,12 @@ canvas {
   align-items: center;
   width: 30%;
   padding: 1.5em;
+  transform: translateX(85%);
   color: var(--primary-foreground);
   border: 0.1em solid var(--primary-foreground);
   border-radius: 0.25em;
   box-shadow: 0 0.02em 0.04em rgba(255, 255, 255, 0.541);
+  scale: .85;
 }
 
 .whois-info-header {
@@ -230,6 +226,12 @@ canvas {
 }
 
 .whois-info h3 {
+  font-size: 1.6em;
+  font-weight: bolder;
+  text-align: center;
+}
+
+.whois-info h2, h3 {
   font-size: 2em;
   font-weight: bolder;
   text-align: left;
@@ -271,7 +273,7 @@ hr {
 #mapa {
   display: flex;
   z-index: 1;
-  min-height: 14em;
+  min-height: 10em;
   width: 100%;
   background-color: #6c757d;
 }
@@ -315,4 +317,55 @@ select option[value="checked"] {
 
 select option[value="to_check"] {
   background: rgb(58, 58, 55);
+}
+.container {
+  display: block;
+  text-align: center;
+}
+
+#tech, #services {
+  justify-items: center;
+}
+
+.dashboard-header h3 {
+  font-size: 1.4em;
+  color: var(--primary-foreground)
+}
+
+/* Advanced em linha própria */
+.advanced {
+  width: 100%;
+  margin-top: 3em; /* Espaço acima */
+  display: block;
+}
+
+.container #btn-more {
+  margin-top: 1em;
+  background: #101a2b;
+  color: #9cebe7;
+  width: 6em;
+  height: 2em;
+  opacity: .8;
+  justify-content: center;
+  font-weight: bolder;
+  border: .15em solid var(--border);
+  border-radius: 2.5%;
+}
+
+.container #btn-more:hover {
+    background: #1ec492;
+    color: whitesmoke;
+    transform: scale(1.05);
+}
+
+#top-services,
+#top-technologies,
+#qtde-assets {
+  max-width: 30em;
+  padding: .5em;
+  border: .02em solid var(--border);
+  background: #171717;
+  max-height: 24rem;
+  display: block;
+  font-size: 1em;
 }

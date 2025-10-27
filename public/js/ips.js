@@ -1,5 +1,3 @@
-import { isIPAddress } from "../../src/controllers/validIP.js";
-
 const tableDiv = document.querySelector(".table-container");
 const spinner = document.querySelector(".spinner-container");
 
@@ -19,8 +17,6 @@ async function fetchInternetDB(ip) {
   toggleSpinner(true); // ativar spinner
 
   try {
-    if (!isIPAddress(ip)) throw new Error("Endereço IP inválido");
-
     const resp = await fetch(`http://localhost:3000/api/internetdb/${ip}`);
     if (!resp.ok) throw new Error(`Erro HTTP ${resp.status}`);
     toggleSpinner(false);

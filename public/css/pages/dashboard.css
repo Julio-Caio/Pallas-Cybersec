@@ -1,0 +1,221 @@
+:root {
+  --background: linear-gradient(
+    90deg,
+    rgba(22, 42, 75, 1) 0%,
+    rgba(0, 0, 0, 1) 50%
+  );
+  --black-background: #000000;
+  --foreground: #171717;
+  --primary: #0d6efd;
+  --primary-foreground: #fff;
+  --border: #e5e7eb;
+  --muted-foreground: #555;
+  --radius: 0.1em;
+  --gradient-green: linear-gradient(
+    90deg,
+    rgba(0, 212, 146, 1) 0%,
+    rgba(22, 78, 61, 1) 71%
+  );
+}
+
+.michroma-regular {
+  font-family: "Michroma", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  min-height: 100vh;
+}
+
+h1 {
+    margin: .6em;
+    text-align: start;
+    font-size: 2em;
+    color: var(--primary-foreground);
+}
+
+hr {
+    color: whitesmoke;
+    height: .5em;
+}
+
+.container-card {
+  text-align: center;
+  font-weight: bold;
+  margin-top: 2em;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1em;
+  padding: 1em;
+}
+
+.item-card {
+  padding: .01em;
+  border: 1.6px solid rgb(70, 70, 70);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 12em;
+}
+
+.item-card-header,
+.item-card-body,
+.item-card-footer {
+  padding: 0.25em;
+}
+
+.item-card-header {
+  background: whitesmoke;
+}
+
+a {
+    text-decoration: none;
+}
+
+h2 {
+    font-weight: bold;
+}
+
+.item-card-body {
+  background: tomato;
+  align-content: center;
+  color: #e5e7eb;
+  flex: 1;
+}
+
+.item-card-footer {
+  background: rgba(165, 165, 165, 0.555);
+}
+
+/* Gráficos responsivos */
+.grid-template {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 1em;
+  padding: 1em;
+}
+
+h3 {
+  margin-top: 1em;
+  color: var(--primary-foreground);
+  font-size: medium;
+  font-weight: bold;
+}
+
+.item {
+  border: 1px solid white;
+  border-radius: 0.5em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.item-header,
+.item-body,
+.item-footer {
+  padding: 0.5em;
+}
+
+.item-header {
+  background: whitesmoke;
+}
+
+.item-body {
+  flex: 1;
+}
+
+.item canvas {
+  justify-items: center;
+  display: block;
+  inset: 0; /* ocupa toda a área do .item */
+}
+
+.item-footer {
+  background: black;
+  color: white;
+}
+
+/* 1º card */
+.container-card .item-card {
+  color: whitesmoke;
+  border-radius: .5em;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container-card .item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 25px rgba(0,0,0,0.35);
+}
+
+/* 1º card - azul tecnológico */
+.container-card .item-card:nth-child(1) .item-card-body {
+  background: linear-gradient(185deg, #09295a, #031527);
+  color: #fff;
+}
+
+/* 2º card - verde segurança */
+.container-card .item-card:nth-child(2) .item-card-body {
+  background: linear-gradient(185deg, #0a4228, #052718);
+  color: #fff;
+}
+
+/* 3º card - amarelo estatístico */
+.container-card .item-card:nth-child(3) .item-card-body {
+  background: linear-gradient(185deg, #524106, #271f03);
+}
+
+/* 4º card - vermelho alerta */
+.container-card .item-card:nth-child(4) .item-card-body {
+  background: linear-gradient(185deg, #77192f, #290802);
+  color: #fff;
+}
+
+/* Cabeçalhos dos cards com aparência “glass” */
+.container-card .item-card-header {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 0.5em;
+}
+
+/* Rodapés sutis */
+.container-card .item-card-footer {
+  background: rgba(0, 0, 0, 0.25);
+  color: #ddd;
+  text-align: center;
+  font-size: 0.85em;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+
+#top-services,
+#top-technologies,
+#qtde-assets {
+  padding: .5em;
+  justify-items: center;
+  max-height: 24rem;
+  display: block;
+  font-size: 1em;
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary-foreground);
+}
+
+i {
+  margin-left: 1%;
+  cursor: pointer;
+}

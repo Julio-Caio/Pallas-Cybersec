@@ -1,0 +1,27 @@
+{
+  "domain": "ifpb.edu.br",
+  "records": [
+    { "name": "ifpb.edu.br", "type": "A", "value": "200.129.77.237" },
+    { "name": "ifpb.edu.br", "type": "MX", "value": "alt1.aspmx.l.google.com" },
+    { "name": "academico.ifpb.edu.br", "type": "A", "value": "200.129.77.8" },
+    {
+      "name": "ava.ifpb.edu.br",
+      "type": "CNAME",
+      "value": "alb-ead-74462806.sa-east-1.elb.amazonaws.com"
+    },
+    { "name": "ava2017.ead.ifpb.edu.br", "type": "A", "value": "200.129.74.13" },
+    { "name": "cti.cabedelo.ifpb.edu.br", "type": "A", "value": "200.129.79.85" },
+    { "name": "devel.ifpb.edu.br", "type": "A", "value": "200.129.77.26" },
+    {
+      "name": "labmicro.cabedelo.ifpb.edu.br",
+      "type": "A",
+      "value": "200.129.79.85"
+    },
+    {
+      "name": "suap.ifpb.edu.br",
+      "type": "CNAME",
+      "value": "alb-dgti-1687892527.sa-east-1.elb.amazonaws.com"
+    },
+    { "name": "www.ifpb.edu.br", "type": "CNAME", "value": "v077237.ifpb.edu.br" }
+  ]
+}
