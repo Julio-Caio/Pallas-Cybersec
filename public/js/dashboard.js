@@ -6,22 +6,22 @@ const datasets = [
   {
     id: "content-records",
     label: "Records",
-    url: "../../src/db/domains.json",
+    url: "../src/db/domains.json",
     key: "records",
     type: "record",
   },
   {
     id: "content-ips",
     label: "IPs",
-    url: "../../src/db/ips.json",
+    url: "../src/db/ips.json",
     key: "ips",
     type: "address",
   },
 ];
 
 // DATA JSON
-const urlServices = "../../src/db/top-services.json";
-const urlTech = "../../src/db/top-technologies.json";
+const urlServices = "../src/db/top-services.json";
+const urlTech = "../src/db/top-technologies.json";
 
 // SETUP
 const canvasTech = document.getElementById("top-technologies");
