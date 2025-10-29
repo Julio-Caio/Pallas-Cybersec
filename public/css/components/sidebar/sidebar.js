@@ -5,3 +5,11 @@ function toggleSidebar()
     sidebar.classList.toggle("active")
 
 }
+
+function togglePanel()
+{    
+    const sidebar = document.getElementById("more-info")
+
+    sidebar.classList.toggle("active")
+
+}

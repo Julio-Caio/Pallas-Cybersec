@@ -73,34 +73,3 @@
 .navbar-toggler:hover {
   color: #ccc;
 }
-
-
-.details-sidebar {
-  position: fixed;
-  top: 0;
-  right: -420px; /* começa fora da tela */
-  width: 400px;
-  height: 100%;
-  background: #111827;
-  color: #f8f9fa;
-  box-shadow: -3px 0 15px rgba(0, 0, 0, 0.3);
-  overflow-y: auto;
-  transition: right 0.3s ease;
-  z-index: 1051; /* maior que a sidebar principal */
-  padding: 1.5rem;
-}
-
-.details-sidebar.active {
-  right: 0; /* aparece */
-}
-
-.details-sidebar .close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.8rem;
-  cursor: pointer;
-}

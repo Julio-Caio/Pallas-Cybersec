@@ -90,14 +90,17 @@ export function createAccordion(containerId, items, type) {
             type="button" data-bs-toggle="collapse"
             data-bs-target="#${itemId}" aria-expanded="false"
             aria-controls="${itemId}">
-            ${title}
+            ${title} <i class="bi bi-box-arrow-up-right" title="Mais informações"></i>
           </button>
         </h2>
-        <div id="${itemId}" class="accordion-collapse collapse"
-          aria-labelledby="${containerId}-heading${index}"
-          data-bs-parent="#${containerId}">
-          <div class="accordion-body bg-dark-subtle text-dark rounded-bottom">${body}</div>
-        </div>
       </div>`;
+  });
+
+  const icons = accordion.querySelectorAll(".bi-box-arrow-up-right");
+  icons.forEach(icon => {
+    icon.addEventListener("click", e => {
+      e.stopPropagation(); // evita conflito com o colapso
+      document.querySelector("#more-info").classList.add("active"); // abre aside
+    });
   });
 }
