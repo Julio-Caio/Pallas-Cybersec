@@ -23,7 +23,6 @@ body {
   background: #0b0d17;
   color: var(--foreground);
   font-family: "Inter", sans-serif;
-  display: flex;
   height: 100vh;
   overflow: hidden;
 }
@@ -34,98 +33,9 @@ a {
 }
 
 .app {
+  margin-top: 5%;
   display: flex;
   width: 100%;
-}
-
-.sidebar.active {
-  background: #111827;
-  border-right: 1px solid rgba(59, 130, 246, 0.3);
-  width: 14em;
-  transition: width 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 100;
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.logo {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #60a5fa;
-}
-
-.icon {
-  cursor: pointer;
-  margin-left: 1em;
-  color: var(--foreground);
-  height: .8em;
-}
-
-.icon:hover {
-  color: #9ecaff;
-}
-
-.icon-btn {
-  background: none;
-  border: none;
-  color: var(--muted-foreground);
-  cursor: pointer;
-  font-size: 1.2rem;
-}
-
-.sidebar-nav {
-  display: none;
-  flex-direction: column;
-  padding: 1rem;
-  gap: 0.5rem;
-}
-
-.sidebar-nav.active {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  gap: 0.5rem;
-}
-
-.nav-item {
-  padding: 0.6rem 0.8rem;
-  border-radius: 0.5rem;
-  transition: background 0.2s;
-}
-
-.nav-item:hover {
-  background: rgba(255, 255, 255);
-  color: #111827;
-  font-weight: 600;
-  transition: all 0.3s ease-in;
-  transform: scale(1.02);
-}
-
-.nav-item.active {
-  background: rgba(59, 130, 246, 0.2);
-  color: #60a5fa;
-}
-
-.nav-item:last-child {
-    margin-top: auto;
-}
-
-.sidebar-footer {
-  border-top: 1px solid rgba(59, 130, 246, 0.3);
-  padding: 0.8rem;
-  font-size: 0.8rem;
-  text-align: center;
-  color: #94a3b8;
 }
 
 /* OVERLAY (mobile) */
@@ -152,7 +62,7 @@ a {
 
 .main-container {
   text-align: center;
-  max-width: 700px;
+  max-width: 70%;
   padding: 2rem;
 }
 
@@ -242,27 +152,4 @@ a {
   color: #94a3b8;
   font-size: 0.9rem;
   line-height: 1.5;
-}
-
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-  }
-
-  .sidebar.closed {
-    transform: translateX(-100%);
-  }
-
-  #toggleSidebar {
-    position: fixed;
-    left: 1rem;
-    top: 1rem;
-    z-index: 120;
-    font-size: 1.5rem;
-  }
 }

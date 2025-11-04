@@ -1,77 +1,118 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scan | Pallas CyberSec</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!--Bootstrap-->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Michroma&display=swap');
+      @import url("https://fonts.googleapis.com/css2?family=Michroma&display=swap");
     </style>
 
-    <link rel="stylesheet" href="css/scan.css" />
-</head>
+    <link rel="stylesheet" href="css/components/sidebar/sidebar.css" />
+    <link rel="stylesheet" href="css/pages/scan.css" />
+  </head>
 
-<body>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
-    
+  <body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <header class="border-bottom py-3 px-4 d-flex align-items-center">
+      <a class="nav-brand" href="/">
+        <h2 class="logo michroma-regular">Pallas</h2>
+      </a>
+      <div class="flex-grow-1 position-relative"></div>
+      <button
+        class="btn btn-dark ms-3"
+        id="toggleSidebarButton"
+        onclick="toggleSidebar()"
+      >
+        <i class="bi bi-list"></i>
+      </button>
+    </header>
     <div class="app">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="sidebar">
-            <div class="sidebar-header">
-                <h2 class="logo michroma-regular">Pallas</h1>
-                    <button class="icon-btn" id="toggleSidebar" onclick="toggleSidebar()">
-                        <span class="icon"><i class="bi bi-list"></i></span>
-                    </button>
-            </div>
-            <nav class="sidebar-nav">
-                <a href="/" class="nav-item"><i class="bi bi-house"></i> Home</a>
-                <a href="/dashboard" class="nav-item"><i class="bi bi-columns-gap"></i> Dashboard</a>
-                <a href="/search" class="nav-item active"><i class="bi bi-fingerprint"></i> Scan</a>
-                <a href="/integrations" class="nav-item"><i class="bi bi-plus-circle"></i> Integrações</a>
-                <a href="/reports" class="nav-item"><i class="bi bi-printer-fill"></i> Relatórios</a>
-                <a href="/logout" class="nav-item"><i class="bi bi-box-arrow-left"></i> Sair</a>
-            </nav>
-        </aside>
-        <!-- Main Content -->
-        <main class="content">
-            <div class="main-container">
-                <div class="logo-center">
-                    <h1 class="michroma-regular">Pallas</h1>
-                </div>
+      <div id="sidebar" class="sidebar sidebar">
+        <span class="closebtn text-light" onclick="toggleSidebar()">×</span>
+        <a href="/" class="nav-item"><i class="bi bi-house"></i> Home</a>
+        <a href="#" class="nav-item active"
+          ><i class="bi bi-columns-gap"></i> Dashboard</a
+        >
+        <a href="/search" class="nav-item"
+          ><i class="bi bi-fingerprint"></i> Scan</a
+        >
+        <a href="/integrations" class="nav-item"
+          ><i class="bi bi-plus-circle"></i> Integrações</a
+        >
+        <a href="/reports" class="nav-item"
+          ><i class="bi bi-printer-fill"></i> Relatórios</a
+        >
+        <a href="/logout" class="nav-item"
+          ><i class="bi bi-box-arrow-left"></i> Sair</a
+        >
+      </div>
+      <!-- Main Content -->
+      <main class="content">
+        <div class="main-container">
+          <div class="logo-center">
+            <h1 class="michroma-regular">Pallas</h1>
+          </div>
 
-                <h2 class="subtitle">O que você quer scanear?</h2>
+          <h2 class="subtitle">O que você quer scanear?</h2>
 
-                <form id="scanForm" class="scan-form">
-                    <input id="scanInput" type="text" placeholder="Digite um domínio, IP ou URL..." />
-                    <button type="submit" id="scan-btn" class="scan-btn"><i class="bi bi-search"></i></button>
-                </form>
+          <form id="scanForm" class="scan-form">
+            <input
+              id="scanInput"
+              type="text"
+              placeholder="Digite um domínio, IP ou URL..."
+            />
+            <button type="submit" id="scan-btn" class="scan-btn">
+              <i class="bi bi-search"></i>
+            </button>
+          </form>
 
-                <div class="quick-actions">
-                    <button class="action-btn" data-value="192.168.1.1">
-                        Serviços e Portas
-                    </button>
-                    <button class="action-btn" data-value="example.com">
-                        Enumerar subdomínios
-                    </button>
-                    <button class="action-btn" data-value="https://example.com">
-                        Certificados SSL
-                    </button>
-                </div>
+          <div class="quick-actions">
+            <button class="action-btn" data-value="192.168.1.1">
+              192.168.1.1
+            </button>
+            <button class="action-btn" data-value="example.com">
+              example.com
+            </button>
+            <button class="action-btn" data-value="Google Inc">
+              Google Inc
+            </button>
+          </div>
 
-                <p class="info-text">
-                    Escaneie domínios, endereços IP ou URLs para descobrir
-                    vulnerabilidades, portas abertas e configurações de segurança.
-                </p>
-            </div>
-        </main>
+          <p class="info-text">
+            Escaneie domínios, endereços IP ou URLs para descobrir
+            vulnerabilidades, portas abertas e configurações de segurança.
+          </p>
+        </div>
+      </main>
     </div>
-    <script src="js/scan.js" defer></script>
-    <script type="module" src="js/ips.js"></script>
-</body>
-
+    <script src="js/sidebar.js"></script>
+    <script src="js/scan.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
