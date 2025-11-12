@@ -1,0 +1,73 @@
+### Rotas do Pallas API
+
+### Funcionalidades:
+
+// Verificar se usuário existe
+// Criação de usuários
+// Edição de usuários
+// Deletar usuários
+
+// Criar dominio
+// Criar
+
+
+# o que ainda falta?
+
+# 1. criar endpoint para consumir as informações
+# 2. ao enviar requisição get /dashboard/, capturar do banco:
+    # id do dominio
+    # nome do dominio
+    # ip
+    # nameserver
+@server=http://localhost:3000
+@createdHostId = {{createHost.response.body.$.id}}
+
+// Criar módulo de integração
+POST @{{server}}/module
+{
+  "name": "Shodan",
+  "desc": "Integração com a API pública do Shodan"
+}
+
+// Criar chave de API
+POST @{{server}}/integrations
+{
+  "apiKey": "SHODAN_API_ABC123XYZ",
+  "id_user": "f21dbf8b-2b7a-4631-8454-bac5c7eb2e01",
+  "id_module": "b42e5dc2-79d2-4a37-a92b-1c9c5f12a10f",
+  "status": true
+}
+
+// Filtrar pelas principais informações
+GET @{{server}}/scan?domain=example.org
+
+// Filtrar por banco de dados
+GET @{{server}}/scan/database?domain=example.org
+
+GET @{{server}}/scan/smb?domain=example.org
+
+POST @{{server}}/target/domain
+Content-Type: application/json
+{
+    "name": "google.com",
+    "ip": "172.217.29.174",
+    "nameserver": "ns1.google.com",
+    "created_at": "1997-09-15T07:00:00+0000",
+    "update_date": "2024-08-02T02:17:33+0000"
+}
+
+POST @{{server}}/target/ip
+Content-Type: application/json
+{
+  "ip": "192.168.0.1",
+  "country": "Brazil",
+  "city": "São Paulo",
+  "ports": [22, 80, 443],
+  "services": [
+    {"port": 22, "name": "ssh"},
+    {"port": 80, "name": "http"},
+    {"port": 443, "name": "https"}
+  ]
+}
+
+DELETE {{server}}/target/{{{{createdHostId}}}}

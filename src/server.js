@@ -1,30 +1,53 @@
-import "express-async-errors";
-import express from "express";
-import cors from "cors";
-import morgan from "morgan";
-import router from "./routes/routes.js";
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import router from './routes/routes.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const server = express();
 const PORT = process.env.PORT || 3000;
+const HOST = process.env.HOST || 'localhost';
 
-server.use(morgan("dev"));
+server.use(morgan('dev'));
 
+// CORS Configuration
 server.use(
   cors({
-    origin: "*",
-    methods: "GET,HEAD,OPTIONS,PUT,PATCH,POST,DELETE",
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: 'http://localhost:3000',
+    methods: 'GET,HEAD,OPTIONS,PUT,POST,DELETE',
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
-    preflightContinue: false,
   })
 );
 
-server.use(express.json());
+server.use(express.urlencoded({extended: false}))
+server.use(express.json())
 
+// Static files
+server.use('/', express.static(path.join(__dirname, '../public')));
+server.use('/public/js', express.static(path.join(__dirname, '../public/js')));
+server.use('/public/css', express.static(path.join(__dirname, '../public/css')));
+server.use('/public/images', express.static(path.join(__dirname, '../public/images')));
+
+// Main routes
 server.use(router);
 
-server.listen(3000, () => {
-  console.log(`Server is running on port ${PORT}`);
+server.use((err, req, res, next) => {
+  console.error('Erro detectado:', err);
+  res.status(err.status || 500).json({ error: err.message || 'Erro interno do servidor' });
+});
+
+server.listen(PORT, HOST, () => {
+  console.log(`\nApp is listening on http://${HOST}:${PORT}`);
 });
 
 export default server;

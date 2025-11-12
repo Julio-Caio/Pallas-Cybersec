@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserAccount {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  provider    String
+  provider_id String?
+  created_at  DateTime @default(now())
+  apiKeys     ApiKey[]
+}
+
+model ApiKey {
+  id         String   @id @default(uuid())
+  apiKey     String
+  id_user    String
+  id_module  String?
+  created_at DateTime @default(now())
+  status     Boolean  @default(true)
+
+  user   UserAccount @relation(fields: [id_user], references: [id])
+  module Module?     @relation(fields: [id_module], references: [id])
+}
+
+model Module {
+  id      String   @id @default(uuid())
+  name    String
+  desc    String?
+  apiKeys ApiKey[]
+}
+
+model Domain {
+  id         String     @id @default(uuid())
+  name       String
+  ip         String
+  nameserver String?
+  created_at DateTime   @default(now())
+  update_at  DateTime   @updatedAt
+}
+
+model IPAddress {
+  id       String   @id @default(uuid())
+  ip       String
+  country  String?
+  city     String?
+  ports    String? // JSON string
+  services String? // JSON string
+}
+
+model Product {
+  id      String  @id @default(uuid())
+  name    String
+  version String?
+}

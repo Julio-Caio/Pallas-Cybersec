@@ -53,16 +53,3 @@ export function readIPs(hostMap) {
   }
   return ipsSet;
 }
-
-// Testes
-const search = await shodanSearch(getFTPServers('.com.br'))
-const extract = extractHostsMap(search)
-console.log(extract)
-let result = readProducts(extract)
-console.log(result)
-result = readPorts(extract)
-console.log(result)
-result = readIPs(extract)
-console.log(result)
-result = readSubdomains(extract)
-console.log(result)

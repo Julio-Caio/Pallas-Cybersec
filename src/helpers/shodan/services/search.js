@@ -8,7 +8,7 @@ const searchOpts = {
   minify: true,
 };
 
-const apiKey = process.env.apiKey | 'CHAVE_API'
+const apiKey = process.env.apiKey
 
 export async function shodanSearch(query) {
   console.log(query)

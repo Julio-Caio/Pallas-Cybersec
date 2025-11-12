@@ -82,6 +82,8 @@
               id="scanInput"
               type="text"
               placeholder="Digite um domínio, IP ou URL..."
+              class="text-center"
+              maxlength="40"
             />
             <button type="submit" id="scan-btn" class="scan-btn">
               <i class="bi bi-search"></i>
@@ -89,21 +91,25 @@
           </form>
 
           <div class="quick-actions">
-            <button class="action-btn" data-value="192.168.1.1">
-              192.168.1.1
+            <button class="action-btn" data-value="example.org">
+              example.org
             </button>
-            <button class="action-btn" data-value="example.com">
-              example.com
+            <button class="action-btn" data-value="testphp.vulnweb.com">
+              testphp.vulnweb.com
             </button>
-            <button class="action-btn" data-value="Google Inc">
-              Google Inc
+            <button class="action-btn" data-value="nmap.org">
+              nmap.org
             </button>
           </div>
 
           <p class="info-text">
-            Escaneie domínios, endereços IP ou URLs para descobrir
-            vulnerabilidades, portas abertas e configurações de segurança.
+            Escaneie os domínios da sua empresa para descobrir
+            possíveis vulnerabilidades
           </p>
+
+          <div id="feedback">
+
+          </div>
         </div>
       </main>
     </div>
