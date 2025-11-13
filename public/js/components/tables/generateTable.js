@@ -45,20 +45,3 @@ function generateTableBody(array) {
     tBody.appendChild(tr);
   }
 }
-
-window.addEventListener("load", async () => {
-  try {
-    const data = await fetchInternetDB("8.8.8.8");
-    const rows = [data];
-
-    generateTableHead(rows[0]);
-    generateTableBody(rows);
-
-    table.appendChild(thead);
-    table.appendChild(tBody);
-    tableDiv.appendChild(table);
-  } catch (err) {
-    console.error("Erro ao carregar dados do InternetDB:", err);
-    tableDiv.innerText = `<p class="text-danger text-center mt-3">Falha ao obter dados. Tente novamente.</p>`;
-  }
-});

@@ -111,20 +111,18 @@
       </div>
       <h2 class="text-center text-primary fw-bold fs-3">Summary</h2>
       <hr />
-      <section id="container-card" class="container-card grid">
- 
-      </section>
+      <section id="container-card" class="container-card grid"></section>
       <br />
       <h2 class="text-center text-primary fw-bold fs-3">Statistics</h2>
       <hr />
 
       <section class="container-chart grid grid-template">
         <div class="item">
-          <h3 class="text-center">Services</h3>
+          <h3 class="text-center">Portas Abertas</h3>
           <canvas id="top-services"></canvas>
         </div>
         <div class="item">
-          <h3 class="text-center">Technologies</h3>
+          <h3 class="text-center">Tecnologias</h3>
 
           <canvas id="top-technologies"></canvas>
         </div>
@@ -133,80 +131,38 @@
       <br />
       <h2 class="text-center text-primary fw-bold fs-3">Assets</h2>
       <hr />
-
       <section class="container advanced" id="inventory">
         <ul class="nav nav-tabs" id="containerTabs" role="tablist"></ul>
-        <div class="tab-content" id="tabContents"></div>
+        <div class="tab-content" id="tabContents">
+          
+        </div>
       </section>
     </main>
     <!--More-Info-->
     <aside id="more-info">
-      <span class="closebtn text-light" onclick="togglePanel()"
+      <span class="closebtn text-light" onclick="togglePanel()" id="menu"
         ><i class="bi bi-justify"></i
       ></span>
-      <div class="container-more">
-        <div class="container-more title">
-          <h3 id="container-title">200.129.77.237</h3>
-          <select id="asset-stats">
-            <option value="1" data-color="var(--brown)">In verification</option>
-            <option value="2" data-color="var(--muted-foreground)">
-              Remove
-            </option>
-            <option value="3" data-color="#198754">Checked</option>
-          </select>
-          <hr />
-        </div>
-        <div class="container-more who-is-summary">
-          <div class="who-is-summary title">
-            <h4>Who Is</h4>
-          </div>
-          <div class="who-is-summary body">
-            <p id="whois-domain"><strong>Domain:</strong> ifpb.edu.br</p>
-            <p id="whois-org">
-              <strong>Owner:</strong> INSTITUTO FEDERAL DE EDUCAÇÃO DA PARAÍBA
-            </p>
-            <p id="whois-owner"><strong>Owner ID:</strong> 24.489.510/0001-32</p>
-            <p id="whois-resp"><strong>Responsible:</strong> Mary Roberta Meira Marinho</p>
-            <p id="whois-country"><strong>Country:</strong> BR</p>
+      <hr />
+      <br />
+      <div class="container-more ports" id="container-port">
 
-            <p class="whois-nameserver"><strong>Nameserver:</strong> ns1.ifpb.edu.br (200.129.77.3)</p>
-            <p id="whois-ns-status"><strong>NS Status:</strong> 20251005 AA</p>
-            <p class="whois-nameserver"><strong>NS Last AA:</strong> 20251005</p>
+      </div>
+      <hr />
+      <div class="container-more os">
+        <div class="os title">
+          <h4 id="os-title">Operating System</h4>
+        </div>
+        <div class="os body">
+          <div id="os">Debian</div>
+          <img src="https://www.debian.org/logos/openlogo-nd.svg" alt="" />
+        </div>
+      </div>
+      <hr />
+      <div class="container-more tech">
 
-            <p class="whois-nameserver"><strong>Nameserver:</strong> ns2.ifpb.edu.br (54.232.44.79)</p>
-          </div>
-        </div>
-        <hr />
-        <br />
-        <div class="container-more ports">
-          <div class="ports title">
-            <h4 id="ports-title">Ports</h4>
-          </div>
-          <div class="ports body">
-            <div class="port">22</div>
-            <div class="port">80</div>
-            <div class="port">443</div>
-          </div>
-        </div>
-        <hr />
-        <div class="container-more os">
-          <div class="os title">
-            <h4 id="os-title">Operating System</h4>
-          </div>
-          <div class="os body">
-            <div id="os">Debian</div>
-            <img src="https://www.debian.org/logos/openlogo-nd.svg" alt="" />
-          </div>
-        </div>
-        <hr />
-        <div class="container-more tech">
-          <div class="tech title text-light">
-            <h4 id="tech-title">Technologies</h4>
-          </div>
-          <div class="tech body">
-            <div class="technologies">NGINX</div>
-            <div class="technologies">Jquery</div>
-          </div>
+        <div class="tech body" id="tech-body">
+          
         </div>
       </div>
     </aside>
@@ -244,7 +200,8 @@
     ></script>
     <script src="css/components/sidebar/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="js/dashboard1.js"></script>
+    <script type="module" src="js/dashboard.js">
+    </script>
 
     <script>
       const select = document.getElementById("asset-stats");

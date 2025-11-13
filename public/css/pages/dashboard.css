@@ -75,7 +75,7 @@ hr {
 #more-info {
   position: fixed;
   top: 0;
-  right: 30%; /* começa fora da tela */
+  right: -30%; /* começa fora da tela */
   width: 30%;
   height: auto;
   max-height: 100vh; /* limita visualmente à altura da tela */
@@ -131,14 +131,14 @@ hr {
   display: flex;
   flex-direction: row;
   gap: 2em;
-  padding: 1em;
+  padding: .5em;
 }
 
 .port {
   background: linear-gradient(#033481, #000000);
   padding: 1em;
   text-align: center;
-  width: 4em;
+  width: 4.5em;
   height: 4em;
   border: 1px solid var(--border);
   border-radius: 0.2em;

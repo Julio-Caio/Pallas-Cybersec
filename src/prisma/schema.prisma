@@ -37,9 +37,8 @@ model Module {
 
 model Domain {
   id         String     @id @default(uuid())
-  name       String
+  name       String    
   ip         String
-  nameserver String?
   created_at DateTime   @default(now())
   update_at  DateTime   @updatedAt
 }
@@ -49,8 +48,10 @@ model IPAddress {
   ip       String
   country  String?
   city     String?
+  os       String?
   ports    String? // JSON string
   services String? // JSON string
+  update_at  DateTime   @updatedAt
 }
 
 model Product {

@@ -1,0 +1,18 @@
+{
+  "domain": "ifpb.edu.br",
+  "owner": "INSTITUTO FEDERAL DE EDUCA��O DA PARA�BA",
+  "ownerid": "24.489.510/0001-32",
+  "responsible": "Mary Roberta Meira Marinho",
+  "country": "BR BR",
+  "ownerC": "ADCFE9",
+  "techC": "ADCFE9",
+  "nserver": "ns1.ifpb.edu.br 200.129.77.3 ns2.ifpb.edu.br 54.232.44.79",
+  "nsstat": "20251112 AA 20251112 AA",
+  "nslastaa": "20251112 20251112",
+  "created": "20090114 #5172961 20081216",
+  "changed": "20250219 20231114",
+  "status": "published",
+  "nicHdlBr": "ADCFE9",
+  "person": "Administrador Centro Federal",
+  "eMail": "administrador@ifpb.edu.br"
+}
