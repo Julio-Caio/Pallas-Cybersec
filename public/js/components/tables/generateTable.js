@@ -4,8 +4,6 @@ const tab = document.querySelectorAll('.tabcontent');
 
 
 async function fetchDadosAPI(baseURL, org, module, param) {
-  // Função para buscar dados de uma API com base em um parâmetro
-  // Retorna os dados em formato JSON
     const response = await fetch(`http://${baseURL}/api/${org}/${module}/${param}`);
     if (!response.ok) {
       throw new Error(`Erro ao buscar dados: ${response.status}`);

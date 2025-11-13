@@ -8,20 +8,22 @@ async function create({name, email, provider, provider_id, password }) {
   return createdUser
 }
 
-async function read(where) {
-  if (where?.name) {
-    where.name = {
-      contains: where.name,
-    };
-  }
- 
-  const users = await prisma.userAccount.findMany({ where });
- 
-  if (users.length === 1 && where) {
-    return users[0];
-  }
- 
-  return users;
+async function readByEmail(email) {
+  try {
+      const user = await prisma.userAccount.findUnique({
+        where: { email },
+        select: {
+          id: true,
+          email: true,
+          password: true,
+        },
+      });
+
+      return user;
+    } catch (error) {
+      console.error("Erro ao buscar usuário:", error);
+      throw new Error("Falha ao buscar usuário");
+    }
 }
  
 async function readById(id) {
@@ -53,4 +55,4 @@ async function remove(id) {
   });
 }
  
-export default { create, read, readById, update, remove };
+export default { create, readByEmail, readById, update, remove };

@@ -75,7 +75,7 @@ hr {
 #more-info {
   position: fixed;
   top: 0;
-  right: -30%; /* começa fora da tela */
+  right: 30%; /* começa fora da tela */
   width: 30%;
   height: auto;
   max-height: 100vh; /* limita visualmente à altura da tela */

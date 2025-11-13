@@ -11,8 +11,7 @@ model UserAccount {
   id          String   @id @default(uuid())
   name        String
   email       String   @unique
-  provider    String
-  provider_id String?
+  password    String
   created_at  DateTime @default(now())
   apiKeys     ApiKey[]
 }

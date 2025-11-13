@@ -35,3 +35,32 @@ export function extractHostsMap(shodanResponse) {
 
   return hostsMap;
 }
+
+export function extractHostsArray(shodanResponse) {
+  const hosts = [];
+
+  if (!shodanResponse || !Array.isArray(shodanResponse.matches)) {
+    return hosts;
+  }
+
+  for (const match of shodanResponse.matches) {
+    hosts.push({
+      ip: match.ip_str || match.ip,
+      hostnames: match.hostnames || [],
+      domains: match.domains || [],
+      transport: match.transport || null,
+      isp: match.isp || "Desconhecido",
+      org: match.org || "Desconhecido",
+      info: match.info || "—",
+      port: match.port ?? null,
+      product: match.product || "—",
+      httpServer: match.http?.server || "—",
+      location: {
+        city: match.location?.city || "—",
+        country: match.location?.country_code || "—",
+      },
+    });
+  }
+
+  return hosts;
+}

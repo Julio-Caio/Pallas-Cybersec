@@ -111,47 +111,8 @@
       </div>
       <h2 class="text-center text-primary fw-bold fs-3">Summary</h2>
       <hr />
-      <section class="container-card grid">
-        <div class="item-card">
-          <div class="item-card-body">
-            <a href="#inventory" title="Mais informações">
-              <h2>20</h2>
-              Banco de Dados <i class="bi bi-info-circle-fill"></i>
-            </a>
-          </div>
-        </div>
-        <div class="item-card">
-          <div class="item-card-body">
-            <a href="#inventory" title="Mais informações">
-              <h2>9</h2>
-              Domínios <i class="bi bi-info-circle-fill"></i>
-            </a>
-          </div>
-        </div>
-        <div class="item-card">
-          <div class="item-card-body">
-            <a href="#inventory" title="Mais informações">
-              <h2>8</h2>
-              Endereços IPs <i class="bi bi-info-circle-fill"></i>
-            </a>
-          </div>
-        </div>
-        <div class="item-card">
-          <div class="item-card-body">
-            <a href="#inventory" title="Mais informações">
-              <h2>8</h2>
-              Capturas de Tela <i class="bi bi-info-circle-fill"></i>
-            </a>
-          </div>
-        </div>
-        <div class="item-card">
-          <div class="item-card-body">
-            <a href="#inventory" title="Mais informações">
-              <h2>0</h2>
-              Servidores SMB <i class="bi bi-info-circle-fill"></i>
-            </a>
-          </div>
-        </div>
+      <section id="container-card" class="container-card grid">
+ 
       </section>
       <br />
       <h2 class="text-center text-primary fw-bold fs-3">Statistics</h2>
@@ -185,7 +146,7 @@
       ></span>
       <div class="container-more">
         <div class="container-more title">
-          <h3>200.129.77.237</h3>
+          <h3 id="container-title">200.129.77.237</h3>
           <select id="asset-stats">
             <option value="1" data-color="var(--brown)">In verification</option>
             <option value="2" data-color="var(--muted-foreground)">
@@ -200,26 +161,26 @@
             <h4>Who Is</h4>
           </div>
           <div class="who-is-summary body">
-            <p><strong>Domain:</strong> ifpb.edu.br</p>
-            <p>
+            <p id="whois-domain"><strong>Domain:</strong> ifpb.edu.br</p>
+            <p id="whois-org">
               <strong>Owner:</strong> INSTITUTO FEDERAL DE EDUCAÇÃO DA PARAÍBA
             </p>
-            <p><strong>Owner ID:</strong> 24.489.510/0001-32</p>
-            <p><strong>Responsible:</strong> Mary Roberta Meira Marinho</p>
-            <p><strong>Country:</strong> BR</p>
+            <p id="whois-owner"><strong>Owner ID:</strong> 24.489.510/0001-32</p>
+            <p id="whois-resp"><strong>Responsible:</strong> Mary Roberta Meira Marinho</p>
+            <p id="whois-country"><strong>Country:</strong> BR</p>
 
-            <p><strong>Nameserver:</strong> ns1.ifpb.edu.br (200.129.77.3)</p>
-            <p><strong>NS Status:</strong> 20251005 AA</p>
-            <p><strong>NS Last AA:</strong> 20251005</p>
+            <p class="whois-nameserver"><strong>Nameserver:</strong> ns1.ifpb.edu.br (200.129.77.3)</p>
+            <p id="whois-ns-status"><strong>NS Status:</strong> 20251005 AA</p>
+            <p class="whois-nameserver"><strong>NS Last AA:</strong> 20251005</p>
 
-            <p><strong>Nameserver:</strong> ns2.ifpb.edu.br (54.232.44.79)</p>
+            <p class="whois-nameserver"><strong>Nameserver:</strong> ns2.ifpb.edu.br (54.232.44.79)</p>
           </div>
         </div>
         <hr />
         <br />
         <div class="container-more ports">
           <div class="ports title">
-            <h4>Ports</h4>
+            <h4 id="ports-title">Ports</h4>
           </div>
           <div class="ports body">
             <div class="port">22</div>
@@ -230,7 +191,7 @@
         <hr />
         <div class="container-more os">
           <div class="os title">
-            <h4>Operating System</h4>
+            <h4 id="os-title">Operating System</h4>
           </div>
           <div class="os body">
             <div id="os">Debian</div>
@@ -240,7 +201,7 @@
         <hr />
         <div class="container-more tech">
           <div class="tech title text-light">
-            <h4>Technologies</h4>
+            <h4 id="tech-title">Technologies</h4>
           </div>
           <div class="tech body">
             <div class="technologies">NGINX</div>
@@ -283,7 +244,7 @@
     ></script>
     <script src="css/components/sidebar/sidebar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="js/dashboard.js"></script>
+    <script type="module" src="js/dashboard1.js"></script>
 
     <script>
       const select = document.getElementById("asset-stats");

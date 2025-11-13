@@ -22,7 +22,7 @@ server.use(morgan('dev'));
 // CORS Configuration
 server.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000','http://localhost:5500'],
     methods: 'GET,HEAD,OPTIONS,PUT,POST,DELETE',
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

@@ -1,82 +1,44 @@
-import { DoughnutChart } from "./components/charts/Doughnut.js";
-import { PieChart } from "./components/charts/Pie.js";
-import { renderTabs } from "./components/helpers/tabs.js";
+const containerCard = document.querySelector("#container-card");
+const containerTitle = document.querySelector('#container-title');
 
-const datasets = [
-  {
-    id: "content-records",
-    label: "Records",
-    url: "../src/db/domains.json",
-    key: "records",
-    type: "record",
-  },
-  {
-    id: "content-ips",
-    label: "IPs",
-    url: "../src/db/ips.json",
-    key: "ips",
-    type: "address",
-  },
-];
+const aside = document.querySelector('aside');
 
-// DATA JSON
-const urlServices = "../src/db/top-services.json";
-const urlTech = "../src/db/top-technologies.json";
+function createCard(component, number, desc) {
+  if (!number || typeof number === null || typeof number === undefined) {
+    number = "-/-";
+  }
+  const cardElement = document.createElement("div");
+  cardElement.classList.add("item-card");
 
-// SETUP
-const canvasTech = document.getElementById("top-technologies");
-const canvasServices = document.getElementById("top-services");
+  const cardBodyElement = document.createElement("div");
+  cardBodyElement.classList.add("item-card-body");
 
-// Options for Doughnut Charts
-const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "bottom",
-      align: "start",
-    },
-    tooltip: {
-      enabled: true,
-    },
-  },
-  animation: {
-    animateRotate: true,
-    animateScale: true,
-  },
-};
+  const link = document.createElement("a");
+  link.href = "#inventory";
+  link.title = "Mais informações";
 
-// STYLES
-const colors = ["#8800ffff", "#00a06dff", "#1D293D"];
+  const title = document.createElement("h2");
+  title.innerText = number;
 
-// ============= MAIN ================== //
+  const text = document.createTextNode(` ${desc} `);
+  const icon = document.createElement("i");
+  icon.classList.add("bi", "bi-info-circle-fill");
 
-DoughnutChart(
-  canvasTech,
-  urlTech,
-  {
-    label: "Tecnologias Detectadas",
-    labelKey: "product",
-    subLabelKey: "version",
-    valueKey: "count",
-    colors,
-  },
-  options
-);
+  link.appendChild(title);
+  link.appendChild(text);
+  link.appendChild(icon);
+  cardBodyElement.appendChild(link);
+  cardElement.appendChild(cardBodyElement);
 
-PieChart(
-  canvasServices,
-  urlServices,
-  {
-    label: "Serviços Detectados",
-    labelKey: "name",
-    valueKey: "hosts",
-    colors,
-  },
-  options
-);
+  if (component) {
+    component.appendChild(cardElement);
+  }
 
-renderTabs({
-  containerTabs: "containerTabs",
-  containerContents: "tabContents",
-  datasets,
-});
+  return cardElement;
+}
+
+const container = document.getElementById("container-card");
+container.appendChild(createCard(container, 20, "Banco de Dados"));
+container.appendChild(createCard(container, 9, "Domínios"));
+container.appendChild(createCard(container, 9, "Endereços IPs"));
+container.appendChild(createCard(container, 9, "Capturas de Tela"));

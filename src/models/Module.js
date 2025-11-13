@@ -1,104 +1,68 @@
-class UserAccount {
-    id;
-    name;
-    email;
-    provider;
-    provider_id;
-    created_at;
+import prisma from "../database/database.js";
 
-    // create user;
-    // getUserByName;
-    // getUserById;
-    // deleteUserById;
+/**
+ * Cria um novo módulo
+ * @param {Object} data
+ * @param {string} data.name - Nome do módulo
+ * @param {string} [data.desc] - Descrição opcional
+ * @returns {Promise<Object>} - Módulo criado
+ */
+async function create({ name, desc }) {
+  const module = await prisma.module.create({
+    data: { name, desc },
+  });
+  return module;
 }
 
-class apiKey {
-    id;
-    apiKey;
-    id_user;
-    id_module;
-    created_at;
-    status; // true or false
-
-    // createAPIKey(userId, key, module)
-    // getAPIKeyById
-    // getAPIKeyByUserId
-    // updateAPIKey
-    // deleteAPIKey
+/**
+ * Lê um módulo pelo ID
+ * @param {string} id - ID do módulo
+ * @returns {Promise<Object|null>} - Módulo encontrado ou null
+ */
+async function read(id) {
+  const module = await prisma.module.findUnique({
+    where: { id },
+    include: { apiKeys: true }, // inclui as API Keys relacionadas
+  });
+  return module;
 }
 
-class Module {
-    id;
-    apiKeyId; // chave estrangeira da tabela api
-    name;
-    desc; // descrição da ferramenta
-
-    constructor(id, name, apiKey, desc) { //props
-        this.name = name,
-        this.apiKey = null,
-        this.desc = desc 
-    }
-
-    //methods
-    // create module
-    // getModuleById
-    // deleteModuleById
-    // search (domain)
-    // enumerate (props, domain) # os systems, ports, technologies
-    // count object_domain (props, domain)
-
+/**
+ * Lista todos os módulos
+ * @returns {Promise<Array>} - Lista de módulos
+ */
+async function readAll() {
+  const modules = await prisma.module.findMany({
+    include: { apiKeys: true },
+    orderBy: { name: "asc" },
+  });
+  return modules;
 }
 
-class Domain {
-    id;
-    name;
-    ip; // chave estrangeira referenciando ip
-    nameserver;
-    owner;
-    created_at;
-    update_at;
-
-    constructor(id,name,ip,nameserver) {
-        this.id = id,
-        this.name = name,
-        this.ip = ip,
-        this.nameserver = nameserver,
-        this.owner = null
-    }
-
-    // create domain entry (database)
-    // update domain
-    // getSubdomains (database)
-    // getPortsbyIP(database)
-    // getProductsbyIP(database)
-    // getPublicIPs
+/**
+ * Atualiza um módulo
+ * @param {string} id - ID do módulo
+ * @param {Object} data - Dados a atualizar
+ * @returns {Promise<Object>} - Módulo atualizado
+ */
+async function update(id, data) {
+  const updated = await prisma.module.update({
+    where: { id },
+    data,
+  });
+  return updated;
 }
 
-
-class IPAddress {
-    id;
-    ip;
-    isp;
-    country;
-    city;
-    ports;
-    services;
-
-    constructor(id,ip_str,country,city,ports,services) {
-        this.id = id,
-        this.ip_str= ip_str,
-        this.country = country,
-        this.city = city,
-        this.ports = ports,
-        this.services = services
-    }
-
-    // methods
-    // create asset
+/**
+ * Remove um módulo
+ * @param {string} id - ID do módulo
+ * @returns {Promise<Object>} - Módulo removido
+ */
+async function remove(id) {
+  const deleted = await prisma.module.delete({
+    where: { id },
+  });
+  return deleted;
 }
 
-class Product {
-    id;
-    name;
-    version;
-}
+export default { create, read, readAll, update, remove };
