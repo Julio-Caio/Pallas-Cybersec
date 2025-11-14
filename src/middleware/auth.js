@@ -2,11 +2,20 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 
+export function validateEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+export function validatePassword(password) {
+  return password && password.length >= 8;
+}
+
 export const isAuthenticated = (req, res, next) => {
   const token = req.cookies.jwt;
 
   if (!token) {
-    return res.status(403).redirect("/403-forbidden");
+    return res.status(401).redirect("/401-unauthorized");
   }
 
   try {

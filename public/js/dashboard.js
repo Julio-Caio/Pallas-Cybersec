@@ -1,8 +1,7 @@
 import { DoughnutChart } from "./components/charts/Doughnut.js";
 import { PieChart } from "./components/charts/Pie.js";
 
-const titleAssetSidebar = document.querySelector("#title-asset")
-const menuSidebarInfo = document.getElementById("menu");
+const titleAssetSidebar = document.querySelector("#title-asset");
 const containerPort = document.querySelector("#container-port");
 const containerTech = document.querySelector("#tech-body");
 
@@ -41,10 +40,6 @@ function createCard(component, number, desc) {
 }
 
 const container = document.getElementById("container-card");
-container.appendChild(createCard(container, 0, "Banco de Dados"));
-container.appendChild(createCard(container, 107, "Domínios"));
-container.appendChild(createCard(container, 103, "Endereços IPs"));
-container.appendChild(createCard(container, 1, "Capturas de Tela"));
 
 function createWhoisCard(data) {
   return `
@@ -64,6 +59,18 @@ function createWhoisCard(data) {
     `;
 }
 
+async function getHostnames(assets) {
+  const hostnames = new Set();
+
+  for (const item of assets) {
+    if (item.hostnames && item.hostnames.length > 0) {
+      item.hostnames.forEach((hostname) => hostnames.add(hostname));
+    }
+  }
+  console.log("Hostnames únicos encontrados:", hostnames);
+  return Array.from(hostnames);
+}
+
 async function loadWhois(domain) {
   try {
     const response = await fetch(`http://localhost:3000/whois/${domain}`);
@@ -74,72 +81,15 @@ async function loadWhois(domain) {
   }
 }
 
-const assets = [
-  {
-    ip: "18.4.60.71",
-    hostnames: ["system-low-sipb.mit.edu"],
-    domains: ["mit.edu"],
-    transport: "tcp",
-    isp: "Massachusetts Institute of Technology",
-    org: "Massachusetts Institute of Technology",
-    info: "—",
-    port: 7100,
-    product: "MS-SQL",
-    httpServer: "nginx",
-    location: {
-      city: "Cambridge",
-      country: "US",
-    },
-  },
-  {
-    ip: "18.4.60.72",
-    hostnames: ["multics.mit.edu"],
-    domains: ["mit.edu"],
-    transport: "tcp",
-    isp: "Massachusetts Institute of Technology",
-    org: "Massachusetts Institute of Technology",
-    info: "—",
-    port: 7100,
-    product: "nginx",
-    httpServer: "Apache HTTPd",
-    location: {
-      city: "Cambridge",
-      country: "US",
-    },
-  },
-  {
-    ip: "18.4.60.73",
-    hostnames: ["multics.mit.edu"],
-    domains: ["mit.edu"],
-    transport: "tcp",
-    isp: "Massachusetts Institute of Technology",
-    org: "Massachusetts Institute of Technology",
-    info: "—",
-    port: 21,
-    product: "Apache",
-    httpServer: "",
-    location: {
-      city: "Cambridge",
-      country: "US",
-    },
-  },
-  {
-    ip: "18.4.60.74",
-    hostnames: ["222-multics.mit.edu"],
-    domains: ["mit.edu"],
-    transport: "tcp",
-    isp: "Massachusetts Institute of Technology",
-    org: "Massachusetts Institute of Technology",
-    info: "—",
-    port: 8080,
-    product: "Apache",
-    httpServer: "—",
-    location: {
-      city: "Cambridge",
-      country: "US",
-    },
-  },
-];
+const response = await fetch("http://localhost:3000/scan/start?domain=");
+const json = await response.json();
+const assets = Array.isArray(json.data) ? json.data : [];
+const hostnames = await getHostnames(assets);
+
+container.appendChild(createCard(container, 0, "Banco de Dados"));
+container.appendChild(createCard(container, hostnames.length, "Hostnames"));
+container.appendChild(createCard(container, json.data.length, "Endereços IPs"));
+container.appendChild(createCard(container, 1, "Capturas de Tela"));
 
 async function getPorts(data) {
   const ports = new Set();
@@ -292,9 +242,8 @@ function createAccordionItem(data) {
 const html = assets.map((item) => createAccordionItem(item)).join("");
 document.getElementById("tabContents").innerHTML = html;
 
-
 function openSidebarWithItem(asset) {
-  titleAssetSidebar.innerHTML = `Ativo: <span class="text-danger text-bold"><ins>${asset.ip}</ins></span>`
+  titleAssetSidebar.innerHTML = `Ativo: <span class="text-danger text-bold"><ins>${asset.ip}</ins></span>`;
 
   containerPort.innerHTML = "";
   containerTech.innerHTML = "";
@@ -325,7 +274,7 @@ document.addEventListener("click", (event) => {
 
   const ip = btn.dataset.ip;
 
-  const asset = assets.find(a => a.ip === ip);
+  const asset = assets.find((a) => a.ip === ip);
 
   if (!asset) {
     console.error("Asset não encontrado:", ip);

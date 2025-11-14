@@ -6,13 +6,13 @@ toggleBtn.addEventListener("click", () => {
   sidebar.classList.toggle("open");
 });
 
-let integrations = [
+const integrations = [
   {
     id: 1,
     name: "Shodan",
-    apiKey: "sk_test_1234567890abcdefghijklmnop",
-    createdAt: "2025-01-15",
-  },
+    apiKey: "sk-1234567890abcdef1234567890abcdef",
+    createdAt: "2024-01-15T10:00:00Z",
+  }
 ];
 
 let visibleKeys = new Set();
@@ -79,3 +79,4 @@ function copyKey(text) {
 }
 
 renderIntegrations();
+

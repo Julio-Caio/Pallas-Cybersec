@@ -34,8 +34,8 @@
       </header>
       <main class="main">
         <div class="login-box">
-          <h1 class="title">Login</h1>
-          <form id="loginForm" class="login-form" method="post">
+          <h1 class="title">Cadastro</h1>
+          <form id="signupForm" class="login-form">
             <input
               type="email"
               name="email"
@@ -51,6 +51,24 @@
               id="password"
               placeholder="password"
               class="input-field"
+              maxlength="60"
+            />
+            <input
+              type="password"
+              name="repeatpassword"
+              id="repeatpassword"
+              required
+              class="input-field"
+              placeholder="password"
+              maxlength="60"
+            />
+            <input
+              type="text"
+              name="mydomain"
+              id="mydomain"
+              required
+              class="input-field"
+              placeholder="example.org"
               maxlength="60"
             />
             <div id="feedback" class="feedback"></div>
@@ -82,12 +100,11 @@
                 ></button>
               </div>
             </div>
-            <button type="submit" id="btn-login" class="btn btn-primary">
-              Entrar
+            <button type="submit" id="btn-signup" class="btn btn-primary">
+              Cadastrar
             </button>
-            <a href="/signup" class="text-decoration-none text-light"
-              >Não possui uma conta ainda?
-              <u class="text-primary">Fazer cadastro</u></a
+            <a href="/login" class="text-decoration-none text-light"
+              >Já possui uma conta? <u class="text-primary">Fazer login</u></a
             >
           </form>
         </div>
@@ -126,7 +143,7 @@
       </footer>
     </div>
 
-    <script type="module" src="js/login.js"></script>
+    <script type="module" src="js/signup.js"></script>
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
       integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"

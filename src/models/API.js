@@ -20,7 +20,7 @@ async function read(id) {
 async function readAllByUser(userId) {
   const api = await prisma.apiKey.findMany({
     where: {
-      userId,
+      id_user: userId,
     },
   });
 

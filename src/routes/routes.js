@@ -1,16 +1,26 @@
 import express from "express";
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import path from "path";
+
+// Models
 import API from "../models/API.js";
 import User from "../models/User.js";
 import Module from "../models/Module.js";
 import Domain from "../models/Domain.js";
 import IPAddress from "../models/IPAddress.js";
+
+// Middleware and Helpers
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { hash } from "../middleware/auth.js";
+import { hash, userIsValid, isAuthenticated, validateEmail, validatePassword} from "../middleware/auth.js";
 import { extractHostsArray } from "../helpers/shodan/services/shodanExtract.js";
 import { search } from "../helpers/shodan/Module.js";
 import { whoisQuery } from "../helpers/whois/whois.js";
+
+
+dotenv.config();
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -22,6 +32,9 @@ class HttpError extends Error {
     this.code = code;
   }
 }
+
+router.use(cookieParser());
+
 // Public Static Pages
 router.get("/", express.static(path.join(__dirname, "../../public")));
 
@@ -29,7 +42,11 @@ router.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "../../public/login.html"));
 });
 
-router.get("/dashboard", (req, res) => {
+router.get("/signup", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../public/signup.html"));
+});
+
+router.get("/dashboard", isAuthenticated, async (req, res) => {
   res.sendFile(path.join(__dirname, "../../public/dashboard.html"));
 });
 
@@ -39,6 +56,22 @@ router.get("/integrations", (req, res) => {
 
 router.get("/scan", (req, res) => {
   res.sendFile(path.join(__dirname, "../../public/scan.html"));
+});
+
+router.get("/403-forbidden", (req, res) => {
+  res.status(403).sendFile(path.join(__dirname, "../../public/403.html"));
+});
+
+router.get("/401-unauthorized", (req, res) => {
+  res.status(401).sendFile(path.join(__dirname, "../../public/401.html"));
+});
+
+router.get("/404-not-found", (req, res) => {
+  res.status(404).sendFile(path.join(__dirname, "../../public/404.html"));
+});
+
+router.get("/500-server-error", (req, res) => {
+  res.status(500).send("<h1>500 - Internal Server Error</h1><p>Something went wrong on our end.</p>");
 });
 
 router.get("/whois/:domain", async (req, res) => {
@@ -64,7 +97,6 @@ router.get("/whois/:domain", async (req, res) => {
 });
 router.get("/scan/start", async (req, res) => {
   const where = req.query.domain;
-  // adicionar validação ao where
   try {
     const result = await search(`hostname:${where}`);
 
@@ -86,74 +118,26 @@ router.get("/scan/start", async (req, res) => {
   }
 });
 
-router.get("/scan/result/smb/:domain", async (req, res) => {
-  const where = req.params;
-  try {
-    const result = await search(
-      `product:samba "Authentication disabled" hostname:${where}`
-    );
 
-    if (!result) {
-      return res
-        .status(404)
-        .json({ message: "Nenhum resultado retornado pelo Shodan." });
-    }
-
-    const resultJSON = extractHostsArray(result);
-
-    return res.status(200).json(resultJSON);
-  } catch (err) {
-    console.error("Erro na rota /scan/start:", err);
-    return res.status(500).json({ message: "Erro interno no servidor." });
-  }
-});
-
-router.get("/scan/result/screenshots/:domain", async (req, res) => {
-  const where = req.params;
-  try {
-    const result = await search(`has_screenshot:true hostname:${where}`);
-
-    if (!result) {
-      return res
-        .status(404)
-        .json({ message: "Nenhum resultado retornado pelo Shodan." });
-    }
-
-    const resultJSON = extractHostsArray(result);
-
-    return res.status(200).json(resultJSON);
-  } catch (err) {
-    console.error("Erro na rota /scan/screenshots:", err);
-    return res.status(500).json({ message: "Erro interno no servidor." });
-  }
-});
-
-router.get("/scan/result/databases/:domain", async (req, res) => {
-  const where = req.query.domain;
-  try {
-    const result = await search(
-      `product:"mysql,mariadb,postgresql,mongodb,redis" hostname:${where}`
-    );
-
-    if (!result) {
-      return res
-        .status(404)
-        .json({ message: "Nenhum resultado retornado pelo Shodan." });
-    }
-
-    const resultJSON = extractHostsArray(result);
-
-    return res.status(200).json(resultJSON);
-  } catch (err) {
-    console.error("Erro na rota /scan/screenshots:", err);
-    return res.status(500).json({ message: "Erro interno no servidor." });
-  }
-});
 
 router.post("/auth/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
+    if (!validateEmail(email)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    if (!validatePassword(password)) {
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 8 characters long" });
+    }
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ error: "All fields are required!" });
+    }
+    
     const emailExists = await User.readByEmail(email);
 
     if (emailExists) {
@@ -162,7 +146,7 @@ router.post("/auth/signup", async (req, res) => {
     // Encrypt the password
     const hashedPassword = await hash(password);
 
-    // Create the user in the database
+  
     await User.create({ name, email, password: hashedPassword });
 
     return res.status(201).json({ message: "User successfully registered" });
@@ -176,9 +160,60 @@ router.post("/auth/signup", async (req, res) => {
   }
 });
 
-router.post("/api/create", async (req, res) => {
+router.post("/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
+  if (!validateEmail(email)) {
+    return res.status(400).json({ error: "Invalid email format" });
+  }
+
   try {
-    const { apiKey, id_user, id_module, status } = req.body;
+    const validUser = await userIsValid(email, password);
+
+    if (!validUser.exists) {
+      return res
+        .status(401)
+        .json({ message: "Incorrect username or password" });
+    }
+
+    const token = jwt.sign(
+      { userId: validUser.user.id, email: validUser.user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      maxAge: 3600000,
+      sameSite: "Strict",
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Login bem-sucedido, redirecionando..." });
+  } catch (error) {
+    console.error("Error during user login:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/api/create", isAuthenticated, async (req, res) => {
+  try {
+    const { apiKey, id_module, status } = req.body;
+
+    const id_user = req.user.userId;
+
+    console.log("ID do usuário autenticado:", id_user);
+
+    if (!apiKey) {
+      return res
+        .status(400)
+        .json({ error: "O campo 'apiKey' é obrigatório." });
+    }
 
     if (!id_user) {
       return res
@@ -228,31 +263,6 @@ router.post("/module/create", async (req, res) => {
     console.error("Erro ao criar Módulo:", err);
     return res.status(500).json({
       error: "Erro interno ao criar Módulo.",
-      details: err.message,
-    });
-  }
-});
-
-router.post("/asset/create/domain", async (req, res) => {
-  try {
-    const { name, ip, nameserver } = req.body;
-
-    if (!name || !ip) {
-      return res.status(400).json({
-        error: "Os campos 'name' e 'ip' são obrigatórios.",
-      });
-    }
-
-    const domain = await Domain.create({ name, ip, nameserver });
-
-    return res.status(201).json({
-      message: "Domínio criado com sucesso!",
-      data: domain,
-    });
-  } catch (err) {
-    console.error("Erro ao criar domínio:", err);
-    return res.status(500).json({
-      error: "Erro interno ao criar domínio.",
       details: err.message,
     });
   }
@@ -399,6 +409,22 @@ router.get("/domain/:domain", async (req, res) => {
     console.error("Error fetching domain details:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
+});
+
+router.use((req, res) => {
+  res.status(404).redirect("/404-not-found");
+});
+
+router.use((req, res) => {
+  res.status(404).redirect("/401-unauthorized");
+})
+
+router.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  const statusCode = err.code || 500;
+  res.status(statusCode).json({
+    error: err.message || "Internal server error",
+  });
 });
 
 export default router;
