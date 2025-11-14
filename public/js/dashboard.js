@@ -1,9 +1,10 @@
 import { DoughnutChart } from "./components/charts/Doughnut.js";
 import { PieChart } from "./components/charts/Pie.js";
 
+const titleAssetSidebar = document.querySelector("#title-asset")
 const menuSidebarInfo = document.getElementById("menu");
-const containerPort = document.querySelector("#container-port")
-const containerTech = document.querySelector("#tech-body")
+const containerPort = document.querySelector("#container-port");
+const containerTech = document.querySelector("#tech-body");
 
 function createCard(component, number, desc) {
   if (!number || typeof number === null || typeof number === undefined) {
@@ -40,10 +41,10 @@ function createCard(component, number, desc) {
 }
 
 const container = document.getElementById("container-card");
-container.appendChild(createCard(container, 20, "Banco de Dados"));
-container.appendChild(createCard(container, 9, "Domínios"));
-container.appendChild(createCard(container, 9, "Endereços IPs"));
-container.appendChild(createCard(container, 9, "Capturas de Tela"));
+container.appendChild(createCard(container, 0, "Banco de Dados"));
+container.appendChild(createCard(container, 107, "Domínios"));
+container.appendChild(createCard(container, 103, "Endereços IPs"));
+container.appendChild(createCard(container, 1, "Capturas de Tela"));
 
 function createWhoisCard(data) {
   return `
@@ -65,20 +66,17 @@ function createWhoisCard(data) {
 
 async function loadWhois(domain) {
   try {
-    const response = await fetch(`http://localhost:3000/api/whois/${domain}`);
+    const response = await fetch(`http://localhost:3000/whois/${domain}`);
     const data = await response.json();
-    menuSidebarInfo.innerHTML += createWhoisCard(data)
+    createWhoisCard(data);
   } catch (err) {
     console.error("Erro ao buscar WHOIS:", err);
   }
 }
 
-loadWhois("ufpb.br");
-
-
 const assets = [
   {
-    ip: "18.4.60.74",
+    ip: "18.4.60.71",
     hostnames: ["system-low-sipb.mit.edu"],
     domains: ["mit.edu"],
     transport: "tcp",
@@ -94,7 +92,7 @@ const assets = [
     },
   },
   {
-    ip: "18.4.60.73",
+    ip: "18.4.60.72",
     hostnames: ["multics.mit.edu"],
     domains: ["mit.edu"],
     transport: "tcp",
@@ -118,7 +116,7 @@ const assets = [
     org: "Massachusetts Institute of Technology",
     info: "—",
     port: 21,
-    product: "nginx",
+    product: "Apache",
     httpServer: "",
     location: {
       city: "Cambridge",
@@ -126,15 +124,15 @@ const assets = [
     },
   },
   {
-    ip: "18.4.60.73",
-    hostnames: ["multics.mit.edu"],
+    ip: "18.4.60.74",
+    hostnames: ["222-multics.mit.edu"],
     domains: ["mit.edu"],
     transport: "tcp",
     isp: "Massachusetts Institute of Technology",
     org: "Massachusetts Institute of Technology",
     info: "—",
     port: 8080,
-    product: "—",
+    product: "Apache",
     httpServer: "—",
     location: {
       city: "Cambridge",
@@ -189,7 +187,6 @@ function createPortCard(ports) {
   containerPort.appendChild(portCard);
 })();
 
-
 async function getTech(assets) {
   const techs = new Set();
 
@@ -216,7 +213,7 @@ function createTechCard(techList) {
   body.classList.add("tech", "body");
   body.id = "tech-body";
 
-  techList.forEach(t => {
+  techList.forEach((t) => {
     const div = document.createElement("div");
     div.classList.add("technologies");
     div.textContent = t;
@@ -255,3 +252,85 @@ PieChart(techCtx, techStats);
 
 const serviceCtx = document.getElementById("top-services");
 DoughnutChart(serviceCtx, PortStats);
+
+function createAccordionItem(data) {
+  const collapseId = `collapse-${data.ip.replace(/\./g, "-")}`;
+
+  return `
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" 
+          type="button" 
+          data-bs-toggle="collapse" 
+          data-bs-target="#${collapseId}" 
+          aria-expanded="false" 
+          aria-controls="${collapseId}">
+          ${data.ip}
+        </button>
+      </h2>
+
+      <div id="${collapseId}" 
+        class="accordion-collapse collapse" 
+        data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <strong>IP:</strong> ${data.ip}<br>
+          <strong>Hostname:</strong> ${data.hostnames?.join(", ") || "—"}<br>
+
+          <button 
+  type="button" 
+  class="btn btn-primary mt-3 btn-details"
+  data-ip="${data.ip}">
+  Detalhes
+</button>
+
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+const html = assets.map((item) => createAccordionItem(item)).join("");
+document.getElementById("tabContents").innerHTML = html;
+
+
+function openSidebarWithItem(asset) {
+  titleAssetSidebar.innerHTML = `Ativo: <span class="text-danger text-bold"><ins>${asset.ip}</ins></span>`
+
+  containerPort.innerHTML = "";
+  containerTech.innerHTML = "";
+
+  // WHOIS
+  if (asset.domains?.length) {
+    loadWhois(asset.domains[0]);
+  }
+
+  // PORTAS
+  const ports = [asset.port];
+  const portCard = createPortCard(ports);
+  containerPort.appendChild(portCard);
+
+  // TECNOLOGIAS
+  const techs = asset.product && asset.product !== "—" ? [asset.product] : [];
+  const techCard = createTechCard(techs);
+  containerTech.appendChild(techCard);
+
+  // AQUI você dispara o evento que abre a sidebar
+  document.querySelector("#more-info").classList.add("active");
+}
+
+// evento para abrir a sidebar respectiva de cada item
+document.addEventListener("click", (event) => {
+  const btn = event.target.closest(".btn-details");
+  if (!btn) return;
+
+  const ip = btn.dataset.ip;
+
+  const asset = assets.find(a => a.ip === ip);
+
+  if (!asset) {
+    console.error("Asset não encontrado:", ip);
+    return;
+  }
+
+  openSidebarWithItem(asset);
+});

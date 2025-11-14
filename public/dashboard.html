@@ -72,7 +72,7 @@
       <a href="#" class="nav-item active"
         ><i class="bi bi-columns-gap"></i> Dashboard</a
       >
-      <a href="/search" class="nav-item"
+      <a href="/scan" class="nav-item"
         ><i class="bi bi-fingerprint"></i> Scan</a
       >
       <a href="/integrations" class="nav-item"
@@ -109,11 +109,12 @@
       <div class="title">
         <h1>Dashboard</h1>
       </div>
-      <h2 class="text-center text-primary fw-bold fs-3">Summary</h2>
+      <h2 class="text-center text-primary fw-bold fs-3">Resumo</h2>
       <hr />
+      <span id="last-data-warning">Última varredura em <b>13/11/2025</b></span>
       <section id="container-card" class="container-card grid"></section>
       <br />
-      <h2 class="text-center text-primary fw-bold fs-3">Statistics</h2>
+      <h2 class="text-center text-primary fw-bold fs-3">Análise</h2>
       <hr />
 
       <section class="container-chart grid grid-template">
@@ -129,12 +130,11 @@
       </section>
 
       <br />
-      <h2 class="text-center text-primary fw-bold fs-3">Assets</h2>
+      <h2 class="text-center text-primary fw-bold fs-3">Ativos Encontrados</h2>
       <hr />
       <section class="container advanced" id="inventory">
         <ul class="nav nav-tabs" id="containerTabs" role="tablist"></ul>
-        <div class="tab-content" id="tabContents">
-          
+        <div class="accordion accordion-flush" id="tabContents">
         </div>
       </section>
     </main>
@@ -142,7 +142,7 @@
     <aside id="more-info">
       <span class="closebtn text-light" onclick="togglePanel()" id="menu"
         ><i class="bi bi-justify"></i
-      ></span>
+      ></span> <h3 id="title-asset"></h3>
       <hr />
       <br />
       <div class="container-more ports" id="container-port">
@@ -151,7 +151,7 @@
       <hr />
       <div class="container-more os">
         <div class="os title">
-          <h4 id="os-title">Operating System</h4>
+          <h4 id="os-title">Sistemas Operacional</h4>
         </div>
         <div class="os body">
           <div id="os">Debian</div>
@@ -160,7 +160,6 @@
       </div>
       <hr />
       <div class="container-more tech">
-
         <div class="tech body" id="tech-body">
           
         </div>

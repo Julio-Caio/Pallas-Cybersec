@@ -41,7 +41,7 @@ router.get("/scan", (req, res) => {
   res.sendFile(path.join(__dirname, "../../public/scan.html"));
 });
 
-router.get("/api/whois/:domain", async (req, res) => {
+router.get("/whois/:domain", async (req, res) => {
   try {
     const domain = req.params.domain;
     const data = await whoisQuery(domain);
@@ -76,7 +76,10 @@ router.get("/scan/start", async (req, res) => {
 
     const resultJSON = extractHostsArray(result);
 
-    return res.status(200).json(resultJSON);
+    return res.status(200).json({
+      data: resultJSON,
+      redirect: `/dashboard`,
+    });
   } catch (err) {
     console.error("Erro na rota /scan/start:", err);
     return res.status(500).json({ message: "Erro interno no servidor." });
@@ -323,7 +326,6 @@ router.post("/asset/import", async (req, res) => {
   }
 });
 
-
 /**
  * @route GET /asset/ip/:ip
  * @desc Retorna os detalhes de um IP
@@ -333,7 +335,7 @@ router.get("/ip/:ip", async (req, res) => {
     const { ip } = req.params;
 
     if (!ip) {
-        return res.status(400).json({message: "domain must provided"})
+      return res.status(400).json({ message: "domain must provided" });
     }
 
     const ipRecord = await IPAddress.readByIP(ip);
@@ -371,7 +373,7 @@ router.get("/ip/:ip", async (req, res) => {
 router.get("/domain/:domain", async (req, res) => {
   try {
     const { domain } = req.params;
-    
+
     if (!domain) {
       return res.status(400).json({ message: "domain must be provided" });
     }

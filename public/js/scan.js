@@ -95,10 +95,9 @@ function doSubmit(e) {
       input.classList.remove("is-invalid");
     }, 2000);
 
-    input.classList.remove("is-invalid");
+    return null;
   }
 
-  
   input.value = "";
   return normalized;
 }
@@ -108,7 +107,31 @@ input.addEventListener("input", () => {
   input.classList.remove("is-invalid");
 });
 
-form.addEventListener("submit", doSubmit);
+form.addEventListener("submit", async (e) => {
+  const value = doSubmit(e);
+
+  if (!value) return;
+
+  // Mensagem imediata ao usuário
+  feedback.innerHTML = `
+    <div class="loading-msg">
+      <div class="spinner-border text-light" role="status"></div>
+      <p>Preparando o escaneamento... Aguarde 5 segundos.</p>
+    </div>
+  `;
+
+  try {
+    const response = await fetch(`/scan/start?domain=${value}`);
+    const json = await response.json();
+
+    setTimeout(() => {
+      window.location.href = json.redirect;
+    }, 5000);
+  } catch (err) {
+    console.error(err);
+    showFeedback("Falha ao conectar ao servidor.", { type: "error" });
+  }
+});
 
 // quickButtons preenchem o input (sem submeter automaticamente)
 quickButtons.forEach((btn) => {

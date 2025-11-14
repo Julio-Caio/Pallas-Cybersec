@@ -1,7 +1,7 @@
 :root {
   --background: linear-gradient(
     90deg,
-    rgba(22, 42, 75, 1) 0%,
+    rgb(16, 35, 66) 0%,
     rgba(0, 0, 0, 1) 50%
   );
   --black-background: #000000;
@@ -45,7 +45,8 @@ h1 {
 }
 
 h4 {
-  margin-bottom: .8em;
+  font-size: 1.2em;
+  margin-bottom: .5em;
 }
 
 hr {
@@ -70,6 +71,11 @@ hr {
   font-weight: 600;
 }
 
+#last-data-warning {
+   color: var(--primary-foreground);
+   margin-left: 1em;
+}
+
 /* aside */
 
 #more-info {
@@ -77,7 +83,7 @@ hr {
   top: 0;
   right: -30%; /* começa fora da tela */
   width: 30%;
-  height: auto;
+  height: 100%;
   max-height: 100vh; /* limita visualmente à altura da tela */
   display: flex;
   flex-direction: column;
@@ -121,16 +127,16 @@ hr {
 }
 
 .container-more.ports {
-  margin-top: 5%;
+  margin-top: 2.5%;
   z-index: 10;
   color: var(--primary-foreground);
-  height: 10em;
+  height: 6em;
 }
 
 .container-more.ports .body {
   display: flex;
   flex-direction: row;
-  gap: 2em;
+  gap: 1.5em;
   padding: .5em;
 }
 
@@ -148,7 +154,7 @@ hr {
   margin-top: 5%;
   z-index: 10;
   color: var(--primary-foreground);
-  height: 10em;
+  height: 6em;
 }
 
 
@@ -487,4 +493,12 @@ a {
 i {
   margin-left: 1%;
   cursor: pointer;
+}
+
+#tabContents {
+  background: var(--dark-gray);
+}
+
+.accordion-item {
+  padding: .2em;
 }
