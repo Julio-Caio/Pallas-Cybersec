@@ -1,35 +1,70 @@
+// =========================
+// VARIÁVEIS GLOBAIS
+// =========================
 const sidebar = document.getElementById("sidebar");
 const toggleBtn = document.getElementById("toggle-sidebar");
 const integrationList = document.getElementById("integration-list");
+const baseUrl = "http://localhost:3000/integrations/keys";
+const visibleKeys = new Set();
 
+// =========================
+// Sidebar
+// =========================
 toggleBtn.addEventListener("click", () => {
   sidebar.classList.toggle("open");
 });
 
-const integrations = [
-  {
-    id: 1,
-    name: "Shodan",
-    apiKey: "sk-1234567890abcdef1234567890abcdef",
-    createdAt: "2024-01-15T10:00:00Z",
+// =========================
+// Funções utilitárias
+// =========================
+async function fetchInt(url, options = {}) {
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    return await response.json();
+  } catch (err) {
+    console.error("Erro ao buscar integração:", err);
   }
-];
+}
 
-let visibleKeys = new Set();
+// =========================
+// API
+// =========================
+function getIntegrations() {
+  return fetchInt(baseUrl);
+}
 
-function renderIntegrations() {
+function deleteIntegration(id) {
+  return fetchInt(`${baseUrl}/${id}`, { method: "DELETE" });
+}
+
+function addIntegration(data) {
+  return fetchInt(baseUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
+
+// =========================
+// Renderização
+// =========================
+function maskKey(key) {
+  return key.slice(0, 6) + "••••••••••••••••" + key.slice(-4);
+}
+
+function renderIntegrations(data = []) {
   integrationList.innerHTML = "";
-  integrations.forEach((int) => {
-    const isVisible = visibleKeys.has(int.id);
 
+  data.forEach((int) => {
+    const isVisible = visibleKeys.has(int.id);
     const card = document.createElement("div");
     card.className = "integration-card";
-
-    // Estado do olho para visualizar a key
-    const eyeIcon = isVisible ? "bi bi-eye-slash" : "bi bi-eye";
+    card.dataset.id = int.id;
 
     card.innerHTML = `
-      <h3>${int.name}</h3>
+      <h3>${int.module}</h3>
+
       <div class="key-field">
         <input 
           type="${isVisible ? "text" : "password"}"
@@ -37,46 +72,119 @@ function renderIntegrations() {
           value="${isVisible ? int.apiKey : maskKey(int.apiKey)}"
           readonly
         />
-        <button class="icon-btn" title="Mostrar/ocultar" onclick="toggleVisibility(${
-          int.id
-        })">
-          <i class="${eyeIcon}"></i>
-        </button>
-        <button class="icon-btn" title="Copiar" onclick="copyKey('${
-          int.apiKey
-        }')"><i class="bi bi-clipboard"></i></button>
-        
-        <button 
-        class="icon-btn" 
-        title="Excluir"
-        data-bs-toggle="modal" 
-        data-bs-target="#deleteModal">
-        <i class="bi bi-trash3"></i>
-      </button>
 
+        <button class="icon-btn btn-toggle" title="Mostrar/ocultar">
+          <i class="${isVisible ? "bi bi-eye-slash" : "bi bi-eye"}"></i>
+        </button>
+
+        <button class="icon-btn btn-copy" title="Copiar">
+          <i class="bi bi-clipboard"></i>
+        </button>
+
+        <button class="icon-btn btn-delete" title="Excluir">
+          <i class="bi bi-trash3" id="delete-${int.id}"></i>
+        </button>
       </div>
-      <p class="meta">Criado em ${new Date(int.createdAt).toLocaleDateString(
-        "pt-BR"
-      )}</p>
+
+      <p class="meta">
+        Criado em ${new Date(int.createdAt).toLocaleDateString("pt-BR")}
+      </p>
     `;
+
     integrationList.appendChild(card);
   });
 }
 
-function maskKey(key) {
-  return key.slice(0, 6) + "••••••••••••••••" + key.slice(-4);
-}
+// =========================
+// Delegação de eventos
+// =========================
+integrationList.addEventListener("click", async (e) => {
+  const card = e.target.closest(".integration-card");
+  if (!card) return;
 
-function toggleVisibility(id) {
-  if (visibleKeys.has(id)) visibleKeys.delete(id);
-  else visibleKeys.add(id);
-  renderIntegrations();
-}
+  const id = card.dataset.id;
 
-function copyKey(text) {
-  navigator.clipboard.writeText(text);
-  alert("Chave copiada!");
-}
+  // Mostrar/ocultar
+  if (e.target.closest(".btn-toggle")) {
+    if (visibleKeys.has(id)) visibleKeys.delete(id);
+    else visibleKeys.add(id);
 
-renderIntegrations();
+    const data = await getIntegrations();
+    return renderIntegrations(data);
+  }
 
+  // Copiar
+  if (e.target.closest(".btn-copy")) {
+    const item = (await getIntegrations()).find((i) => i.id === id);
+    if (!item) return;
+    navigator.clipboard.writeText(item.apiKey);
+    alert("Chave copiada!");
+    return;
+  }
+
+  // Deletar - ABRIR MODAL
+  if (e.target.closest(".btn-delete")) {
+    document.getElementById("confirmDelete").setAttribute("data-id", id);
+
+    const modal = new bootstrap.Modal(document.getElementById("deleteModal"));
+    return modal.show();
+  }
+});
+
+// =========================
+// Adicionar integração
+// =========================
+const addButton = document.getElementById("addButton");
+addButton.addEventListener("click", async () => {
+  const moduleInput = document.getElementById("module");
+  const apiKeyInput = document.getElementById("key");
+
+  const newIntegration = {
+    module: moduleInput.value,
+    apiKey: apiKeyInput.value,
+  };
+
+  const response = await addIntegration(newIntegration);
+  if (!response) {
+    alert("Erro ao adicionar integração.");
+    return;
+  } else {
+    alert("Integração adicionada com sucesso!");
+  }
+
+  const data = await getIntegrations();
+  renderIntegrations(data);
+
+  // Fechar modal e limpar campos
+  const modalEl = document.getElementById("Modal");
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  modal.hide();
+
+  moduleInput.value = "";
+  apiKeyInput.value = "";
+});
+
+// =========================
+// Confirmar exclusão
+// =========================
+
+const confirmDeleteBtn = document.getElementById("confirmDelete");
+
+confirmDeleteBtn.addEventListener("click", async () => {
+  const id = confirmDeleteBtn.getAttribute("data-id");
+  await deleteIntegration(id);
+  const data = await getIntegrations();
+  renderIntegrations(data);
+
+  const modalEl = document.getElementById("deleteModal");
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  modal.hide();
+});
+
+// =========================
+// Inicialização
+// =========================
+(async function init() {
+  const data = await getIntegrations();
+  renderIntegrations(data);
+})();

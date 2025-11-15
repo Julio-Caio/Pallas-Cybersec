@@ -21,8 +21,15 @@ async function create({ name, desc }) {
  */
 async function read(id) {
   const module = await prisma.module.findUnique({
-    where: { id },
-    include: { apiKeys: true }, // inclui as API Keys relacionadas
+    where: { id }
+  });
+  return module;
+}
+
+async function readByName(name) {
+  
+  const module = await prisma.module.findUnique({
+    where: { name }
   });
   return module;
 }
@@ -65,4 +72,4 @@ async function remove(id) {
   return deleted;
 }
 
-export default { create, read, readAll, update, remove };
+export default { create, read, readAll, readByName, update, remove };

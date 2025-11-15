@@ -14,11 +14,16 @@ import IPAddress from "../models/IPAddress.js";
 // Middleware and Helpers
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { hash, userIsValid, isAuthenticated, validateEmail, validatePassword} from "../middleware/auth.js";
+import {
+  hash,
+  userIsValid,
+  isAuthenticated,
+  validateEmail,
+  validatePassword,
+} from "../middleware/auth.js";
 import { extractHostsArray } from "../helpers/shodan/services/shodanExtract.js";
 import { search } from "../helpers/shodan/Module.js";
 import { whoisQuery } from "../helpers/whois/whois.js";
-
 
 dotenv.config();
 
@@ -70,8 +75,12 @@ router.get("/404-not-found", (req, res) => {
   res.status(404).sendFile(path.join(__dirname, "../../public/404.html"));
 });
 
-router.get("/500-server-error", (req, res) => {
-  res.status(500).send("<h1>500 - Internal Server Error</h1><p>Something went wrong on our end.</p>");
+router.get("/500-internal-server-error", (req, res) => {
+  res
+    .status(500)
+    .send(
+      "<h1>500 - Internal Server Error</h1><p>Something went wrong on our end.</p>"
+    );
 });
 
 router.get("/whois/:domain", async (req, res) => {
@@ -118,8 +127,6 @@ router.get("/scan/start", async (req, res) => {
   }
 });
 
-
-
 router.post("/auth/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -137,7 +144,7 @@ router.post("/auth/signup", async (req, res) => {
     if (!name || !email || !password) {
       return res.status(400).json({ error: "All fields are required!" });
     }
-    
+
     const emailExists = await User.readByEmail(email);
 
     if (emailExists) {
@@ -146,7 +153,6 @@ router.post("/auth/signup", async (req, res) => {
     // Encrypt the password
     const hashedPassword = await hash(password);
 
-  
     await User.create({ name, email, password: hashedPassword });
 
     return res.status(201).json({ message: "User successfully registered" });
@@ -198,47 +204,6 @@ router.post("/auth/login", async (req, res) => {
   } catch (error) {
     console.error("Error during user login:", error);
     return res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-router.post("/api/create", isAuthenticated, async (req, res) => {
-  try {
-    const { apiKey, id_module, status } = req.body;
-
-    const id_user = req.user.userId;
-
-    console.log("ID do usuário autenticado:", id_user);
-
-    if (!apiKey) {
-      return res
-        .status(400)
-        .json({ error: "O campo 'apiKey' é obrigatório." });
-    }
-
-    if (!id_user) {
-      return res
-        .status(400)
-        .json({ error: "O campo 'id_user' é obrigatório." });
-    }
-
-    const hashedAPI = await hash(apiKey);
-    const newApiKey = await API.create({
-      apiKey: hashedAPI,
-      id_user,
-      id_module,
-      status: status ?? true,
-    });
-
-    return res.status(201).json({
-      message: "Chave de API criada com sucesso!",
-      data: newApiKey,
-    });
-  } catch (err) {
-    console.error("Erro ao criar API Key:", err);
-    return res.status(500).json({
-      error: "Erro interno ao criar chave de API.",
-      details: err.message,
-    });
   }
 });
 
@@ -411,13 +376,115 @@ router.get("/domain/:domain", async (req, res) => {
   }
 });
 
+router.get("/integrations/keys", isAuthenticated, async (req, res) => {
+  try {
+    const id_user = req.user.userId;
+    const integrations = await API.readAllByUser(id_user);
+
+    const enriched = await Promise.all(
+      integrations.map(async (int) => {
+        const module = await Module.read(int.id_module);
+        return {
+          id: int.id,
+          apiKey: int.apiKey,
+          module: module.name,
+        };
+      })
+    );
+
+    return res.status(200).json(enriched);
+  } catch (err) {
+    console.error("Erro ao buscar integrações:", err);
+    return res.status(500).json({
+      error: "Erro interno ao buscar integrações.",
+      details: err.message,
+    });
+  }
+});
+
+router.post("/integrations/keys", isAuthenticated, async (req, res) => {
+  try {
+    const { apiKey, module } = req.body;
+    const id_user = req.user.userId;
+
+    if (!apiKey || !module) {
+      return res
+        .status(400)
+        .json({ error: "Os campos 'apiKey' e 'id_module' são obrigatórios." });
+    }
+
+    const moduleExists = await Module.readByName(module);
+
+    if (!moduleExists) {
+      return res.status(404).json({ error: "Módulo não encontrado." });
+    }
+    const id_module = moduleExists.id;
+
+    const newIntegration = await API.create({
+      apiKey,
+      id_user,
+      id_module,
+      status: true,
+    });
+
+    return res.status(201).json({
+      message: "Integração criada com sucesso!",
+      data: newIntegration,
+    });
+  } catch (err) {
+    console.error("Erro ao criar integração:", err);
+    return res.status(500).json({
+      error: "Erro interno ao criar integração.",
+      details: err.message,
+    });
+  }
+});
+
+// Delete Integration
+router.delete("/integrations/keys/:id", isAuthenticated, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const id_user = req.user.userId;
+
+    const integration = await API.read(id);
+
+    if (!integration) {
+      return res.status(404).json({ error: "Integração não encontrada." });
+    }
+
+    if (integration.id_user !== id_user) {
+      return res
+        .status(403)
+        .json({
+          error: "Você não tem permissão para deletar esta integração.",
+        });
+    }
+
+    await API.remove(id);
+
+    return res
+      .status(200)
+      .json({ message: "Integração deletada com sucesso." });
+  } catch (err) {
+    console.error("Erro ao deletar integração:", err);
+    return res.status(500).json({
+      error: "Erro interno ao deletar integração.",
+      details: err.message,
+    });
+  }
+});
+
 router.use((req, res) => {
   res.status(404).redirect("/404-not-found");
 });
 
 router.use((req, res) => {
   res.status(404).redirect("/401-unauthorized");
-})
+});
+
+router.use((req, res) => {
+  res.status(500).redirect("/500-internal-server-error");
+});
 
 router.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
