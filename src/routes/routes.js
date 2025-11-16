@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import path from "path";
+import IO from "ioredis";
 
 // Models
 import API from "../models/API.js";
@@ -21,12 +22,16 @@ import {
   validateEmail,
   validatePassword,
 } from "../middleware/auth.js";
-import { extractHostsArray } from "../helpers/shodan/services/shodanExtract.js";
-import { search } from "../helpers/shodan/Module.js";
+
 import { whoisQuery } from "../helpers/whois/whois.js";
+
+// Workers and Queues
+import { addJobToQueue, fetchShodanQueue } from "../workers/queue.js";
 
 dotenv.config();
 
+
+const redis = new IO({maxRetriesPerRequest: null});
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -104,27 +109,65 @@ router.get("/whois/:domain", async (req, res) => {
     res.status(500).json({ error: "Erro ao consultar WHOIS" });
   }
 });
-router.get("/scan/start", async (req, res) => {
-  const where = req.query.domain;
-  try {
-    const result = await search(`hostname:${where}`);
 
-    if (!result) {
-      return res
-        .status(404)
-        .json({ message: "Nenhum resultado retornado pelo Shodan." });
-    }
-
-    const resultJSON = extractHostsArray(result);
-
-    return res.status(200).json({
-      data: resultJSON,
-      redirect: `/dashboard`,
-    });
-  } catch (err) {
-    console.error("Erro na rota /scan/start:", err);
-    return res.status(500).json({ message: "Erro interno no servidor." });
+router.get("/scan/start", isAuthenticated, async (req, res) => {
+  const domain = req.query.domain;
+  if (!domain) {
+    return res.status(400).json({ message: "Domain is required" });
   }
+
+  const cacheKey = `scan:cache:${domain}`;
+  const runningKey = `scan:running:${domain}`;
+
+  const cached = await redis.get(cacheKey)
+  if (cached) {
+    return res.status(200).json({
+      source: "cache",
+      domain,
+      results: JSON.parse(cached)
+    });
+  }
+
+  const runningJobId = await redis.get(runningKey);
+  if (runningJobId) {
+    return res.status(202).json({
+      message: "Scan already running",
+      jobId: runningJobId,
+      checkStatus: `/scan/status/${runningJobId}`,
+    });
+  }
+
+  const job = await addJobToQueue(domain);
+
+  await redis.set(runningKey, job.id, "EX", 120, "NX");
+
+  return res.status(202).json({
+    message: "New scan started",
+    jobId: job.id,
+    checkStatus: `/scan/status/${job.id}`,
+  });
+});
+
+router.get("/scan/status/:jobId", async (req, res) => {
+  const job = await fetchShodanQueue.getJob(req.params.jobId);
+
+  if (!job) return res.status(404).json({ message: "Job not found" });
+
+  const state = await job.getState();
+  const progress = job.progress;
+  const result = job.returnvalue || null;
+
+  res.json({ jobId: job.id, status: state, progress, result });
+});
+
+router.get("/scan/results/:jobId", async (req, res) => {
+  const job = await fetchShodanQueue.getJob(req.params.jobId);
+  if (!job) return res.status(404).json({ message: "Job not found" });
+
+  if (!job.returnvalue)
+    return res.status(202).json({ message: "Still processing" });
+
+  res.json({ jobId: job.id, results: job.returnvalue });
 });
 
 router.post("/auth/signup", async (req, res) => {
@@ -228,74 +271,6 @@ router.post("/module/create", async (req, res) => {
     console.error("Erro ao criar Módulo:", err);
     return res.status(500).json({
       error: "Erro interno ao criar Módulo.",
-      details: err.message,
-    });
-  }
-});
-
-router.post("/asset/import", async (req, res) => {
-  try {
-    const assets = req.body;
-
-    if (!Array.isArray(assets) || assets.length === 0) {
-      return res.status(400).json({
-        error: "O corpo da requisição deve ser um array de objetos de ativos.",
-      });
-    }
-
-    const createdRecords = [];
-
-    for (const asset of assets) {
-      const {
-        ip,
-        domains,
-        location,
-        ports,
-        product,
-        hostnames,
-        org,
-        info,
-        isp,
-      } = asset;
-
-      // 📌 Salva IP e informações relacionadas
-      const ipData = await IPAddress.create({
-        ip,
-        country: location?.country || null,
-        city: location?.city || null,
-        os: JSON.stringify(info ? [info] : []),
-        ports: JSON.stringify(ports ? [ports] : []),
-        services: JSON.stringify(product ? [product] : []),
-      });
-
-      // 📌 Salva domínios (evita duplicatas com upsert)
-      if (domains && domains.length > 0) {
-        await Promise.all(
-          domains.map((domainName) =>
-            Domain.create({
-              where: { name: domainName },
-              update: { ip },
-              create: {
-                name: domainName,
-                ip,
-              },
-            })
-          )
-        );
-      }
-
-      createdRecords.push({ ip: ipData.ip, domains });
-    }
-
-    return res.status(201).json({
-      message: "Ativos importados e armazenados com sucesso!",
-      total: createdRecords.length,
-      data: createdRecords,
-    });
-  } catch (err) {
-    console.error("❌ Erro ao importar ativos:", err);
-    return res.status(500).json({
-      error: "Erro interno ao importar ativos.",
       details: err.message,
     });
   }
@@ -453,11 +428,9 @@ router.delete("/integrations/keys/:id", isAuthenticated, async (req, res) => {
     }
 
     if (integration.id_user !== id_user) {
-      return res
-        .status(403)
-        .json({
-          error: "Você não tem permissão para deletar esta integração.",
-        });
+      return res.status(403).json({
+        error: "Você não tem permissão para deletar esta integração.",
+      });
     }
 
     await API.remove(id);
