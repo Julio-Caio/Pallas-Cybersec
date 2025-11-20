@@ -38,6 +38,8 @@ server.use('/public/js', express.static(path.join(__dirname, '../public/js')));
 server.use('/public/css', express.static(path.join(__dirname, '../public/css')));
 server.use('/public/images', express.static(path.join(__dirname, '../public/images')));
 
+server.set('view engine', 'ejs')
+
 // Main routes
 server.use(router);
 

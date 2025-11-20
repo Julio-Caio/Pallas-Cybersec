@@ -3,13 +3,11 @@ import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import path from "path";
-import IO from "ioredis";
 
 // Models
 import API from "../models/API.js";
 import User from "../models/User.js";
 import Module from "../models/Module.js";
-import Domain from "../models/Domain.js";
 import IPAddress from "../models/IPAddress.js";
 
 // Middleware and Helpers
@@ -25,13 +23,10 @@ import {
 
 import { whoisQuery } from "../helpers/whois/whois.js";
 
-// Workers and Queues
-import { addJobToQueue, fetchShodanQueue } from "../workers/queue.js";
+import Shodan from "../services/shodan/shodan.js";
 
 dotenv.config();
 
-
-const redis = new IO({maxRetriesPerRequest: null});
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -60,11 +55,11 @@ router.get("/dashboard", isAuthenticated, async (req, res) => {
   res.sendFile(path.join(__dirname, "../../public/dashboard.html"));
 });
 
-router.get("/integrations", (req, res) => {
+router.get("/integrations", isAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "../../public/integrations.html"));
 });
 
-router.get("/scan", (req, res) => {
+router.get("/scan", isAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "../../public/scan.html"));
 });
 
@@ -88,12 +83,11 @@ router.get("/500-internal-server-error", (req, res) => {
     );
 });
 
-router.get("/whois/:domain", async (req, res) => {
+router.get("/whois/:domain", isAuthenticated, async (req, res) => {
   try {
     const domain = req.params.domain;
     const data = await whoisQuery(domain);
 
-    // Normaliza alguns campos
     res.json({
       domain: domain,
       owner: data.orgName || data.owner || "N/A",
@@ -111,64 +105,70 @@ router.get("/whois/:domain", async (req, res) => {
 });
 
 router.get("/scan/start", isAuthenticated, async (req, res) => {
-  const domain = req.query.domain;
-  if (!domain) {
-    return res.status(400).json({ message: "Domain is required" });
+  try {
+    const domain = req.query.domain;
+    const module = await Module.readByName("Shodan");
+    const key = await API.readByModule(req.userId, module.id); //api key salva no banco para este módulo
+
+    if (!module) {
+      return res.status(500).json({ message: "Adicione um módulo!"})
+    }
+
+    if (!domain) {
+      return res.status(400).json({ message: "Um domínio válido é requerido" });
+    }
+    if (!key) {
+      return res.status(400).json({ message: "API Key inválida. Verifique sua chave"})
+    }
+
+    const shodan = new Shodan(key.apiKey);
+    const results = await shodan.search(`hostname:${domain}`);
+    
+    for (const doc of results.matches) {
+      console.log(doc)
+      IPAddress.create({
+        ip: doc.ip_str,
+        domain: domain,
+        domains: doc.domains,
+        hostnames: doc.hostnames,
+        asn: doc.asn,
+        country: doc.location.country_code,
+        city: doc.location.city,
+        org: doc.org,
+        os: doc.os,
+        ports: String(doc.port),
+        services: doc.product,
+      })
+    }
+    return res.status(200).json(results);
+  } catch (error) {
+    console.error(`Erro ao executar coleta: ${error}`)
+    return res.status(500).json({message: "Erro ao executar coleta, tente novamente!"})
   }
-
-  const cacheKey = `scan:cache:${domain}`;
-  const runningKey = `scan:running:${domain}`;
-
-  const cached = await redis.get(cacheKey)
-  if (cached) {
-    return res.status(200).json({
-      source: "cache",
-      domain,
-      results: JSON.parse(cached)
-    });
-  }
-
-  const runningJobId = await redis.get(runningKey);
-  if (runningJobId) {
-    return res.status(202).json({
-      message: "Scan already running",
-      jobId: runningJobId,
-      checkStatus: `/scan/status/${runningJobId}`,
-    });
-  }
-
-  const job = await addJobToQueue(domain);
-
-  await redis.set(runningKey, job.id, "EX", 120, "NX");
-
-  return res.status(202).json({
-    message: "New scan started",
-    jobId: job.id,
-    checkStatus: `/scan/status/${job.id}`,
-  });
 });
 
-router.get("/scan/status/:jobId", async (req, res) => {
-  const job = await fetchShodanQueue.getJob(req.params.jobId);
+router.get("/scan/results/:domain", async (req, res) => {
+  try {
+    const { domain } = req.params;
+    const assets = await IPAddress.readByDomain(domain);
 
-  if (!job) return res.status(404).json({ message: "Job not found" });
+    if (!assets || assets.length === 0) {
+      return res.status(404).json({
+        error: "Nenhum registro encontrado para esse domínio."
+      });
+    }
 
-  const state = await job.getState();
-  const progress = job.progress;
-  const result = job.returnvalue || null;
+    res.status(200).json(assets);
 
-  res.json({ jobId: job.id, status: state, progress, result });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Erro interno no servidor." });
+  }
 });
 
-router.get("/scan/results/:jobId", async (req, res) => {
-  const job = await fetchShodanQueue.getJob(req.params.jobId);
-  if (!job) return res.status(404).json({ message: "Job not found" });
-
-  if (!job.returnvalue)
-    return res.status(202).json({ message: "Still processing" });
-
-  res.json({ jobId: job.id, results: job.returnvalue });
-});
+router.get("/dashboard/:domain", isAuthenticated, async (req, res) => {
+  
+})
 
 router.post("/auth/signup", async (req, res) => {
   try {
@@ -276,80 +276,6 @@ router.post("/module/create", async (req, res) => {
   }
 });
 
-/**
- * @route GET /asset/ip/:ip
- * @desc Retorna os detalhes de um IP
- */
-router.get("/ip/:ip", async (req, res) => {
-  try {
-    const { ip } = req.params;
-
-    if (!ip) {
-      return res.status(400).json({ message: "domain must provided" });
-    }
-
-    const ipRecord = await IPAddress.readByIP(ip);
-
-    if (!ipRecord) {
-      return res.status(404).json({ error: "IP not found" });
-    }
-
-    // Converte campos JSON se existirem
-    const parsedOS = ipRecord.os ? JSON.parse(ipRecord.os) : [];
-    const parsedPorts = ipRecord.ports ? JSON.parse(ipRecord.ports) : [];
-    const parsedServices = ipRecord.services
-      ? JSON.parse(ipRecord.services)
-      : [];
-
-    return res.json({
-      ip: ipRecord.ip,
-      country: ipRecord.country,
-      city: ipRecord.city,
-      ports: parsedPorts,
-      services: parsedServices,
-      os: parsedOS,
-      updatedAt: ipRecord.update_at,
-    });
-  } catch (error) {
-    console.error("Error fetching IP details:", error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-/**
- * @route GET /asset/domain/:domain
- * @desc Retorna os detalhes de um domínio e subdomínios associados
- */
-router.get("/domain/:domain", async (req, res) => {
-  try {
-    const { domain } = req.params;
-
-    if (!domain) {
-      return res.status(400).json({ message: "domain must be provided" });
-    }
-
-    // Busca domínios que contenham o nome
-    const domainResults = await Domain.readByName(domain);
-
-    if (!domainResults || domainResults.length === 0) {
-      return res.status(404).json({ error: "Domain not found" });
-    }
-
-    // Seleciona o mais recente
-    const domainRecord = domainResults[domainResults.length - 1];
-
-    return res.json({
-      domain: domainRecord.name,
-      nameserver: domainRecord.nameserver,
-      ip: domainRecord.ip,
-      createdAt: domainRecord.created_at,
-      updatedAt: domainRecord.update_at,
-    });
-  } catch (error) {
-    console.error("Error fetching domain details:", error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-});
 
 router.get("/integrations/keys", isAuthenticated, async (req, res) => {
   try {
@@ -380,6 +306,7 @@ router.get("/integrations/keys", isAuthenticated, async (req, res) => {
 router.post("/integrations/keys", isAuthenticated, async (req, res) => {
   try {
     const { apiKey, module } = req.body;
+    const apiKeyTrim = apiKey.trim() // remove white spaces
     const id_user = req.user.userId;
 
     if (!apiKey || !module) {
@@ -396,7 +323,7 @@ router.post("/integrations/keys", isAuthenticated, async (req, res) => {
     const id_module = moduleExists.id;
 
     const newIntegration = await API.create({
-      apiKey,
+      apiKey: apiKeyTrim,
       id_user,
       id_module,
       status: true,

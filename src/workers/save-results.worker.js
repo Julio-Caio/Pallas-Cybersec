@@ -1,4 +1,5 @@
 import { Worker } from "bullmq";
+import IPAddress from "../models/IPAddress";
 import IORedis from "ioredis";
 
 const connection = new IORedis({ maxRetriesPerRequest: null });

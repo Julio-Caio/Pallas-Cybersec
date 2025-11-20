@@ -8,12 +8,11 @@ import { extractHostsArray } from "../helpers/shodan/normalized.js";
 dotenv.config();
 
 const connection = new IORedis({ maxRetriesPerRequest: null });
-const SHODAN_API_KEY = process.env.SHODAN_API_KEY
 
 const fetchShodanWorker = new Worker(
   "fetch-shodan",
   async (job) => {
-    const shodan = new Shodan(SHODAN_API_KEY);
+    const shodan = new Shodan();
 
     const result = await shodan.search(`hostname:${job.data.domain}`);
 
@@ -38,6 +37,7 @@ fetchShodanWorker.on("completed", async (job) => {
 
   console.log(`Job ${job.id} completed and cached`);
 });
+
 fetchShodanWorker.on("failed", (job, err) => {
   console.error(`Job with ID: ${job.id} has failed with error: ${err.message}`);
 });

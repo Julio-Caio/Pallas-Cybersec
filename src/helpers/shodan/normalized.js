@@ -3,15 +3,15 @@
  * @param {Object} match
  * @returns {Object}
  */
-function normalizeHost(match) {
+export function normalizeHost(match) {
   return {
     ip: match.ip_str || match.ip || null,
-    hostnames: match.hostnames || [],
     domains: match.domains || [],
+    hostnames: match.hostnames || [],
     transport: match.transport ?? null,
-    isp: match.isp || "Desconhecido",
+    asn: match.asn || "Desconhecido",
     org: match.org || "Desconhecido",
-    info: match.info || "—",
+    os: match.os || "—",
     port: match.port ?? null,
     product: match.product || "—",
     httpServer: match.http?.server || "—",
