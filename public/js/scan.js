@@ -121,9 +121,19 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify({ domain: value.trim() }),
     });
 
-    const data = await response.json()
-    console.log(data)
+    setTimeout(() => {
+      showFeedback("Realizando a busca... Aguarde alguns segundos", {
+        type: "status",
+      }),
+        5000;
+    });
 
+    const data = await response.json();
+
+    if (data.redirect) {
+      window.location.href = data.redirect;
+      return;
+    }
   } catch (err) {
     showFeedback("Falha na comunicação com o servidor.", { type: "error" });
   }

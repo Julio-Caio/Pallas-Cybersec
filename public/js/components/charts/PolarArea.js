@@ -25,7 +25,7 @@ const chartOptions = {
     animateScale: true,
   },
 };
-export function DoughnutChart(ctx, statsObject, options = chartOptions) {
+export function PolarChart(ctx, statsObject, options = chartOptions) {
   const labels = Object.keys(statsObject);
   const values = Object.values(statsObject);
 
@@ -41,7 +41,7 @@ export function DoughnutChart(ctx, statsObject, options = chartOptions) {
   };
 
   return new Chart(ctx, {
-    type: "doughnut",
+    type: "polarArea",
     data,
     options,
   });

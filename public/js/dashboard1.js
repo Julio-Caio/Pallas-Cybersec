@@ -1,15 +1,20 @@
-const baseURL = "localhost:3000/assets" //api
+import { BarChart } from "./components/charts/Bar.js";
+import { DoughnutChart } from "./components/charts/Doughnut.js";
+
+let techChart = null;
+let serviceChart = null;
+
+
 const dateLastUpdate = document.getElementById("last-data-warning");
-const btnSelectDomain = document.getElementById("domain-select")
-
-let data = [];
-
+const btnSelectDomain = document.getElementById("domain-select");
 const container = document.getElementById("container-card");
 
-function createCard(component, number, desc) {
-  if (!number || typeof number === null || typeof number === undefined) {
-    number = "0";
-  }
+/* -------------------------
+   Criação dos Cards
+------------------------- */
+function createCard(parent, number, desc) {
+  const value = number ?? "0";
+
   const cardElement = document.createElement("div");
   cardElement.classList.add("item-card");
 
@@ -21,7 +26,7 @@ function createCard(component, number, desc) {
   link.title = "Mais informações";
 
   const title = document.createElement("h2");
-  title.innerText = number;
+  title.innerText = value;
 
   const text = document.createTextNode(` ${desc} `);
   const icon = document.createElement("i");
@@ -33,14 +38,12 @@ function createCard(component, number, desc) {
   cardBodyElement.appendChild(link);
   cardElement.appendChild(cardBodyElement);
 
-  if (component) {
-    component.appendChild(cardElement);
-  }
-
-  return cardElement;
+  parent.appendChild(cardElement);
 }
 
-// Formatar data e hora
+/* -------------------------
+   Formatar data
+------------------------- */
 function formatarDataHoraBR(isoString) {
   const data = new Date(isoString);
 
@@ -58,64 +61,123 @@ function formatarDataHoraBR(isoString) {
   return new Intl.DateTimeFormat("pt-BR", opcoes).format(data);
 }
 
-// Popula o select de domínios
+/* -------------------------
+   Popula o select
+------------------------- */
 function populateDomainSelect(item, last_update, domains) {
-    item.innerHTML = '<option value="">Selecione</option>';
+  item.innerHTML = '<option value="">Selecione</option>';
 
-    domains.forEach(domain => {
-        const domainOption = document.createElement("option");
-        domainOption.value = domain.name; 
-        domainOption.textContent = domain.name;
+  domains.forEach(domain => {
+    const option = document.createElement("option");
+    option.value = domain.name;
+    option.textContent = domain.name;
+    item.appendChild(option);
+  });
 
-        item.appendChild(domainOption);
-
-        last_update.innerHTML = `<p class='m-3'><strong>Última varredura</strong>: <span class='text-warning'>${formatarDataHoraBR(domain.update_at)}</span></p>`
-    });
+  const last = domains[domains.length - 1];
+  if (last?.update_at) {
+    last_update.innerHTML =
+      `<p class="m-3"><strong>Última varredura</strong>: 
+       <span class="text-warning">${formatarDataHoraBR(last.update_at)}</span></p>`;
+  }
 }
 
-// Buscar dominios para selecionar
+/* -------------------------
+   Buscar domínios
+------------------------- */
 async function fetchDomains() {
-    try {
-        const res = await fetch("/domains", {
-            headers: {
-                "Content-Type": "application/json",
-            }
-        });
+  try {
+    const res = await fetch("/domains", { headers: { "Content-Type": "application/json" }});
+    if (!res.ok) throw new Error("Erro ao buscar domínios.");
 
-        if (!res.ok) throw new Error("Erro ao buscar domínios.");
+    const domains = await res.json();
 
-        const domains = await res.json();
-        populateDomainSelect(btnSelectDomain, dateLastUpdate, domains);
-    } catch (error) {
-        showToast("Erro ao carregar domínios.", "danger");
+    if (!Array.isArray(domains)) {
+      console.warn("Resposta inválida de /domains");
+      return;
     }
+
+    populateDomainSelect(btnSelectDomain, dateLastUpdate, domains);
+  } catch (error) {
+    console.log("Erro ao carregar domínios", error);
+  }
+}
+
+function countByField(items, field) {
+  const map = {};
+
+  for (const item of items) {
+    const value = item[field];
+
+    if (value && value !== "—") {
+      map[value] = (map[value] || 0) + 1;
+    }
+  }
+
+  return map;
 }
 
 fetchDomains();
-select_domain();
 
-async function fetch_data(target) {
+/* -------------------------
+   Dados estatísticos
+------------------------- */
+async function fetchStatisticsData(target) {
   try {
-    const res  = await fetch(`http://localhost:3000/domains/statistics/${target}`);
+    const res = await fetch(`http://localhost:3000/domains/statistics/${target}`);
     return await res.json();
   } catch (err) {
     console.error("Erro na requisição:", err);
   }
 }
 
-function select_domain() {
+function initDomainSelection() {
   btnSelectDomain.addEventListener("change", async (e) => {
-    const stats = await fetch_data(e.target.value);
-    renderCards(stats);
-  });
+  if (!e.target.value) return;
+
+  const stats = await fetchStatisticsData(e.target.value);
+  renderCards(stats);
+
+  const assets = await getItensbyDomain(e.target.value);
+
+  const techStats = countByField(assets, "services");
+  const portStats = countByField(assets, "ports");
+
+  const techCtx = document.getElementById("top-technologies");
+  const serviceCtx = document.getElementById("top-services");
+
+  // destruir gráficos anteriores
+  if (techChart) techChart.destroy();
+  if (serviceChart) serviceChart.destroy();
+
+  // criar novos
+  techChart = BarChart(techCtx, techStats);
+  serviceChart = DoughnutChart(serviceCtx, portStats);
+});
 }
 
+/* -------------------------
+   Renderizar cards
+------------------------- */
 function renderCards(stats) {
   container.innerHTML = "";
-  container.appendChild(createCard(container, stats.screenshots.total, "Dispositivos com RDP"));
-  container.appendChild(createCard(container, stats.telnet.total, "Dispositivos com Telnet"));
-  container.appendChild(createCard(container, stats.databases.total, "Banco de Dados"));
-  container.appendChild(createCard(container, stats.smb.total, "Servidores SMB"));
+
+  createCard(container, stats?.screenshots?.total, "Dispositivos com RDP");
+  createCard(container, stats?.telnet?.total, "Dispositivos com Telnet");
+  createCard(container, stats?.databases?.total, "Banco de Dados");
+  createCard(container, stats?.smb?.total, "Servidores SMB");
 }
 
-select_domain()
+/* -------------------------
+   Buscar itens por domínio
+------------------------- */
+async function getItensbyDomain(domain) {
+  try {
+    const res = await fetch(`http://localhost:3000/scan/results/${domain}`);
+    return res.json();
+  } catch (error) {
+    console.log(`Erro ao importar os dados: ${error}`);
+  }
+}
+
+initDomainSelection();

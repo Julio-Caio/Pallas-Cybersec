@@ -57,8 +57,12 @@ router.get("/dashboard", isAuthenticated, async (req, res) => {
   res.sendFile(path.join(__dirname, "../../public/dashboard.html"));
 });
 
-router.get("/integrations", isAuthenticated, (req, res) => {
+router.get("/integrations", (req, res) => {
   res.sendFile(path.join(__dirname, "../../public/integrations.html"));
+});
+
+router.get("/modules", (req, res) => {
+  res.sendFile(path.join(__dirname, "../../public/modules.html"));
 });
 
 router.get("/scan", isAuthenticated, (req, res) => {
@@ -121,21 +125,26 @@ router.post("/scan/start", isAuthenticated, async (req, res) => {
 
     const key = await API.readByModule(req.userId, module.id);
     if (!key) {
-      return res.status(400).json({ message: "API Key inválida. Verifique sua chave" });
+      return res
+        .status(400)
+        .json({ message: "API Key inválida. Verifique sua chave" });
     }
     // verificar se existe entrada
-    const cacheID = `shodan:${domain}`; 
-    const cached = await redis.get(cacheID); 
-    if (cached) { return res.status(200).json(JSON.parse(cached)); }
+    const cacheID = `shodan:${domain}`;
+    const cached = await redis.get(cacheID);
+    console.log(cached);
+    if (cached) {
+      return res.json({ redirect: "/dashboard" });
+    }
     // Busca Shodan
     const shodan = new Shodan(key.apiKey);
     const results = await shodan.search(`hostname:${domain}`);
 
     // Garantir domínio único
     let domainDB = await Domain.readByName(domain);
-
+    console.log(domainDB)
     if (!domainDB) {
-      domainDB = await Domain.create(domain); // deve retornar objeto, não só id
+      domainDB = await Domain.create(domain);
       console.log(`Domínio criado: ${domainDB.id}`);
     } else {
       console.log(`Domínio já existe: ${domainDB.id}`);
@@ -145,7 +154,7 @@ router.post("/scan/start", isAuthenticated, async (req, res) => {
     for (const doc of results.matches) {
       const payload = {
         ip: doc.ip_str,
-        domainName: domainDB.id,
+        domainId: domainDB.id,
         domains: doc.domains || [],
         hostnames: doc.hostnames || [],
         asn: doc.asn || null,
@@ -165,12 +174,10 @@ router.post("/scan/start", isAuthenticated, async (req, res) => {
         await IPAddress.update({ id: existing.id, ...payload });
       }
     }
-
     // salvar em cache
     await redis.set(cacheID, JSON.stringify(results), "EX", 1800);
 
-    return res.status(200).json({message: 'Aguarde alguns segundos'})
-
+    return res.status(200).json({ redirect: "/dashboard" });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Erro ao executar coleta" });
@@ -179,13 +186,12 @@ router.post("/scan/start", isAuthenticated, async (req, res) => {
 
 router.get("/scan/results/:domain", async (req, res) => {
   try {
-    const { domain } = req.params
-    const results = await IPAddress.readByDomain(domain)
+    const { domain } = req.params;
+    const results = await IPAddress.readByDomain(domain);
     res.status(200).json(results);
-
   } catch (error) {
-    console.error(`Erro interno: ${error}`)
-    return res.status(500)
+    console.error(`Erro interno: ${error}`);
+    return res.status(500);
   }
 });
 
@@ -193,28 +199,27 @@ router.get("/domains", isAuthenticated, async (req, res) => {
   try {
     const myDomains = await Domain.readAll();
     if (myDomains.length === 0 || !myDomains) {
-      return res.status(200).json({ message: 'Não há domínios cadastrados!'})
+      return res.status(200).json({ message: "Não há domínios cadastrados!" });
     }
-    return res.status(200).json(myDomains)
+    return res.status(200).json(myDomains);
   } catch (error) {
-    console.error(`Erro interno: ${error}`)
-    return res.status(500)
+    console.error(`Erro interno: ${error}`);
+    return res.status(500);
   }
 });
 
 router.get("/domains/info/:domain", isAuthenticated, async (req, res) => {
   try {
     const { domain } = req.params;
-    const assets = await Domain.readByName(domain)
+    const assets = await Domain.readByName(domain);
 
     if (!assets || assets.length === 0) {
       return res.status(404).json({
-        error: "Nenhum registro encontrado para esse domínio."
+        error: "Nenhum registro encontrado para esse domínio.",
       });
     }
 
     res.status(200).json(assets);
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Erro interno no servidor." });
@@ -223,8 +228,8 @@ router.get("/domains/info/:domain", isAuthenticated, async (req, res) => {
 
 router.get("/domains/statistics/:domain", async (req, res) => {
   try {
-    const domain = req.params.domain
-    console.log(domain)
+    const domain = req.params.domain;
+    console.log(domain);
     const module = await Module.readByName("Shodan");
     const key = await API.readByModule(req.userId, module.id);
 
@@ -237,24 +242,40 @@ router.get("/domains/statistics/:domain", async (req, res) => {
     }
 
     if (!key) {
-      return res.status(400).json({ message: "API Key inválida. Verifique sua chave" });
+      return res
+        .status(400)
+        .json({ message: "API Key inválida. Verifique sua chave" });
     }
 
     const shodan = new Shodan(key.apiKey);
-    const databases = await shodan.count(`product:mysql,redis,mongodb,mariadb,postgresql,influxdb,ms-sql hostname:${domain}`);
-    const screenshots = await shodan.count(`product:"Remote Desktop Protocol" hostname:${domain}`);
-    const smb_exposures = await shodan.count(`product:samba "Authentication disabled" hostname:${domain}`);
-    const telnet_devices = await shodan.count(`port:23 "telnet" hostname:${domain}`);
+    const databases = await shodan.count(
+      `product:mysql,redis,mongodb,mariadb,postgresql,influxdb,ms-sql hostname:${domain}`
+    );
+    const screenshots = await shodan.count(
+      `product:"Remote Desktop Protocol" hostname:${domain}`
+    );
+    const smb_exposures = await shodan.count(
+      `product:samba "Authentication disabled" hostname:${domain}`
+    );
+    const telnet_devices = await shodan.count(
+      `port:23 "telnet" hostname:${domain}`
+    );
 
-    return res.status(200).json({databases: databases, screenshots: screenshots, smb: smb_exposures, telnet:telnet_devices})
-
+    return res
+      .status(200)
+      .json({
+        databases: databases,
+        screenshots: screenshots,
+        smb: smb_exposures,
+        telnet: telnet_devices,
+      });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      message: "Erro ao executar coleta"
+      message: "Erro ao executar coleta",
     });
   }
-})
+});
 
 router.post("/auth/signup", async (req, res) => {
   try {
@@ -336,7 +357,20 @@ router.post("/auth/login", async (req, res) => {
   }
 });
 
-router.post("/module/create", async (req, res) => {
+router.get("/api/modules", isAuthenticated, async (req, res) => {
+  try {
+    const myModules = await Module.readAll();
+    if (myModules.length === 0 || !myModules) {
+      return res.status(200).json({ message: "Não há módulos cadastrados!" });
+    }
+    return res.status(200).json(myModules);
+  } catch (error) {
+    console.error(`Erro interno: ${error}`);
+    return res.status(500);
+  }
+});
+
+router.post("/api/modules", isAuthenticated, async (req, res) => {
   try {
     const { name, desc } = req.body;
 
@@ -361,7 +395,6 @@ router.post("/module/create", async (req, res) => {
     });
   }
 });
-
 
 router.get("/integrations/keys", isAuthenticated, async (req, res) => {
   try {
@@ -392,7 +425,7 @@ router.get("/integrations/keys", isAuthenticated, async (req, res) => {
 router.post("/integrations/keys", isAuthenticated, async (req, res) => {
   try {
     const { apiKey, module } = req.body;
-    const apiKeyTrim = apiKey.trim() // remove white spaces
+    const apiKeyTrim = apiKey.trim(); // remove white spaces
     const id_user = req.user.userId;
 
     if (!apiKey || !module) {
@@ -447,6 +480,31 @@ router.delete("/integrations/keys/:id", isAuthenticated, async (req, res) => {
     }
 
     await API.remove(id);
+
+    return res
+      .status(200)
+      .json({ message: "Integração deletada com sucesso." });
+  } catch (err) {
+    console.error("Erro ao deletar integração:", err);
+    return res.status(500).json({
+      error: "Erro interno ao deletar integração.",
+      details: err.message,
+    });
+  }
+});
+
+// Delete Module
+router.delete("/api/modules/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const mod = await Module.read(id);
+
+    if (!mod) {
+      return res.status(404).json({ error: "Módulo não encontrado." });
+    }
+
+    await Module.remove(id);
 
     return res
       .status(200)

@@ -84,23 +84,28 @@
     <main>
       <h2 class="text-center fs-3">Resumo</h2>
       <hr />
-      <label for="domain-select" class="text-light m-3" style="display: block;">Informe um domínio</label>
-      <select class="form-select" id="domain-select" aria-label="Default select example">
 
+      <div class="select-domain">
+      <label for="domain-select" class="text-light m-3">Informe um domínio:</label>
+      <select class="form-select" id="domain-select" aria-label="Default select example">
       </select>
+      </div>
       <span id="last-data-warning">Nenhum domínio selecionado</span>
       <section id="container-card" class="container-card grid"></section>
       <br />
       <section class="container-chart grid grid-template">
         <div class="item">
           <h3 class="text-center">Portas Abertas</h3>
+          <hr>
           <canvas id="top-services"></canvas>
         </div>
-        <div class="item">
+      </section>
+      <div class="item">
           <h3 class="text-center">Tecnologias</h3>
+          <hr>
           <canvas id="top-technologies"></canvas>
         </div>
-      </section>
+        <br>
       <h2 class="text-center fs-3">Ativos Encontrados</h2>
       <hr />
       <section class="container advanced" id="inventory">

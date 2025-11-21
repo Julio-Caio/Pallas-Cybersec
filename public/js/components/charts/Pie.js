@@ -3,7 +3,7 @@ const chartOptions = {
 
   plugins: {
     legend: {
-      position: "bottom",
+      position: "left",
       labels: {
         font: {
           size: 16,
@@ -35,14 +35,6 @@ export function PieChart(ctx, statsObject, options = chartOptions) {
       {
         label: "Count",
         data: values,
-        backgroundColor: [
-          "rgb(255, 99, 132)",
-          "rgb(54, 162, 235)",
-          "rgb(255, 205, 86)",
-          "rgb(75, 192, 192)",
-          "rgb(153, 102, 255)",
-          "rgb(255, 159, 64)",
-        ],
         hoverOffset: 4,
       },
     ],

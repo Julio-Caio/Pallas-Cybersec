@@ -1,10 +1,7 @@
 import prisma from "../config/database.js";
 
-async function create({ ip, domain, domains, hostnames, country, city,os, ports, services, asn, org }) {
-  const createdIP = await prisma.iPAddress.create({
-    data: { ip,domain, domains, hostnames, country, city, os, ports, services , asn, org},
-  });
-  return createdIP;
+async function create(data) {
+  return await prisma.iPAddress.create({ data });
 }
 
 async function readAll() {
@@ -19,31 +16,36 @@ async function readByIP(ip) {
   return await prisma.iPAddress.findFirst({ where: { ip } });
 }
 
-async function update({ id, ip, domain, domains, hostnames, country, city,os, ports, services, asn, org }) {
-  if (!id) {
-    throw new Error("É necessário fornecer o ID para atualizar o registro");
-  }
-  
-  const updatedIP = await prisma.iPAddress.update({
+async function update({ id, ...data }) {
+  return await prisma.iPAddress.update({
     where: { id },
-    data: { ip, domain, domains, hostnames, country, city,os, ports, services, asn, org },
+    data,
   });
-
-  return updatedIP;
 }
 
-async function readByDomain(domain) {
-  await prisma.iPAddress.findMany({
-  where: {
-    domains: {
-      has: domain
+async function readByDomain(domainName) {
+  return await prisma.iPAddress.findMany({
+    where: {
+      domain: {
+        name: domainName
+      }
+    },
+    include: {
+      domain: true
     }
-  }
-})};
-
+  });
+}
 
 async function remove(id) {
-  await prisma.iPAddress.delete({ where: { id } });
+  return await prisma.iPAddress.delete({ where: { id } });
 }
 
-export default { create, readAll, readById, readByIP, readByDomain, update, remove };
+export default {
+  create,
+  readAll,
+  readById,
+  readByIP,
+  readByDomain,
+  update,
+  remove
+};

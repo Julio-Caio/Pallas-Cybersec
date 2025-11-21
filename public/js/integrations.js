@@ -6,6 +6,8 @@ const toggleBtn = document.getElementById("toggle-sidebar");
 const integrationList = document.getElementById("integration-list");
 const baseUrl = "http://localhost:3000/integrations/keys";
 const visibleKeys = new Set();
+const btnSelectModule = document.getElementById("module-select")
+
 
 // =========================
 // Sidebar
@@ -26,6 +28,38 @@ async function fetchInt(url, options = {}) {
     console.error("Erro ao buscar integração:", err);
   }
 }
+
+function populateModuleSelect(item, modules) {
+    item.innerHTML = '<option value="">Selecione</option>';
+
+    modules.forEach(module => {
+        const modOption = document.createElement("option");
+        modOption.value = module.name;
+        modOption.textContent = module.name;
+
+        item.appendChild(modOption);
+    });
+}
+
+// Buscar dominios para selecionar
+async function fetchModules() {
+    try {
+        const res = await fetch("/api/modules", {
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+
+        if (!res.ok) throw new Error("Módulos não cadastrados.");
+
+        const modules = await res.json();
+        populateModuleSelect(btnSelectModule, modules);
+    } catch (error) {
+        alert("Erro ao carregar domínios.");
+    }
+}
+
+fetchModules()
 
 // =========================
 // API
@@ -136,7 +170,7 @@ integrationList.addEventListener("click", async (e) => {
 // =========================
 const addButton = document.getElementById("addButton");
 addButton.addEventListener("click", async () => {
-  const moduleInput = document.getElementById("module");
+  const moduleInput = document.getElementById("module-select");
   const apiKeyInput = document.getElementById("key");
 
   const newIntegration = {

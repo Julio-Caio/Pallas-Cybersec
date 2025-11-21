@@ -2,8 +2,9 @@ import { DoughnutChart } from "./components/charts/Doughnut.js";
 import { PieChart } from "./components/charts/Pie.js";
 
 const titleAssetSidebar = document.querySelector("#title-asset");
-const containerPort = document.querySelector("#container-port");
-const containerTech = document.querySelector("#tech-body");
+export const containerPort = document.querySelector("#container-port");
+export const containerTech = document.querySelector("#tech-body");
+
 
 function createCard(component, number, desc) {
   if (!number || typeof number === null || typeof number === undefined) {
@@ -83,7 +84,7 @@ async function loadWhois(domain) {
 
 const response = await fetch("http://localhost:3000/scan/start?domain=");
 const json = await response.json();
-const assets = Array.isArray(json.data) ? json.data : [];
+export const assets = Array.isArray(json.data) ? json.data : [];
 const hostnames = await getHostnames(assets);
 
 container.appendChild(createCard(container, 0, "Banco de Dados"));
