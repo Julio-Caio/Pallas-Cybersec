@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import path from "path";
+import redis from "../config/redis.js";
 
 // Models
 import API from "../models/API.js";
@@ -24,6 +25,7 @@ import {
 import { whoisQuery } from "../helpers/whois/whois.js";
 
 import Shodan from "../services/shodan/shodan.js";
+import Domain from "../models/Domain.js";
 
 dotenv.config();
 
@@ -104,53 +106,106 @@ router.get("/whois/:domain", isAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/scan/start", isAuthenticated, async (req, res) => {
+router.post("/scan/start", isAuthenticated, async (req, res) => {
   try {
-    const domain = req.query.domain;
-    const module = await Module.readByName("Shodan");
-    const key = await API.readByModule(req.userId, module.id); //api key salva no banco para este módulo
-
-    if (!module) {
-      return res.status(500).json({ message: "Adicione um módulo!"})
-    }
+    const { domain } = req.body;
 
     if (!domain) {
       return res.status(400).json({ message: "Um domínio válido é requerido" });
     }
-    if (!key) {
-      return res.status(400).json({ message: "API Key inválida. Verifique sua chave"})
+
+    const module = await Module.readByName("Shodan");
+    if (!module) {
+      return res.status(500).json({ message: "Adicione um módulo!" });
     }
 
+    const key = await API.readByModule(req.userId, module.id);
+    if (!key) {
+      return res.status(400).json({ message: "API Key inválida. Verifique sua chave" });
+    }
+    // verificar se existe entrada
+    const cacheID = `shodan:${domain}`; 
+    const cached = await redis.get(cacheID); 
+    if (cached) { return res.status(200).json(JSON.parse(cached)); }
+    // Busca Shodan
     const shodan = new Shodan(key.apiKey);
     const results = await shodan.search(`hostname:${domain}`);
-    
-    for (const doc of results.matches) {
-      console.log(doc)
-      IPAddress.create({
-        ip: doc.ip_str,
-        domain: domain,
-        domains: doc.domains,
-        hostnames: doc.hostnames,
-        asn: doc.asn,
-        country: doc.location.country_code,
-        city: doc.location.city,
-        org: doc.org,
-        os: doc.os,
-        ports: String(doc.port),
-        services: doc.product,
-      })
+
+    // Garantir domínio único
+    let domainDB = await Domain.readByName(domain);
+
+    if (!domainDB) {
+      domainDB = await Domain.create(domain); // deve retornar objeto, não só id
+      console.log(`Domínio criado: ${domainDB.id}`);
+    } else {
+      console.log(`Domínio já existe: ${domainDB.id}`);
     }
-    return res.status(200).json(results);
+
+    // Processar IPs
+    for (const doc of results.matches) {
+      const payload = {
+        ip: doc.ip_str,
+        domainName: domainDB.id,
+        domains: doc.domains || [],
+        hostnames: doc.hostnames || [],
+        asn: doc.asn || null,
+        country: doc.location.country_code || null,
+        city: doc.location.city || null,
+        org: doc.org || null,
+        os: doc.os || null,
+        ports: String(doc.port || ""),
+        services: doc.product || null,
+      };
+
+      const existing = await IPAddress.readByIP(doc.ip_str);
+
+      if (!existing) {
+        await IPAddress.create(payload);
+      } else {
+        await IPAddress.update({ id: existing.id, ...payload });
+      }
+    }
+
+    // salvar em cache
+    await redis.set(cacheID, JSON.stringify(results), "EX", 1800);
+
+    return res.status(200).json({message: 'Aguarde alguns segundos'})
+
   } catch (error) {
-    console.error(`Erro ao executar coleta: ${error}`)
-    return res.status(500).json({message: "Erro ao executar coleta, tente novamente!"})
+    console.error(error);
+    return res.status(500).json({ message: "Erro ao executar coleta" });
   }
 });
 
 router.get("/scan/results/:domain", async (req, res) => {
   try {
+    const { domain } = req.params
+    const results = await IPAddress.readByDomain(domain)
+    res.status(200).json(results);
+
+  } catch (error) {
+    console.error(`Erro interno: ${error}`)
+    return res.status(500)
+  }
+});
+
+router.get("/domains", isAuthenticated, async (req, res) => {
+  try {
+    const myDomains = await Domain.readAll();
+    if (myDomains.length === 0 || !myDomains) {
+      return res.status(200).json({ message: 'Não há domínios cadastrados!'})
+    }
+    return res.status(200).json(myDomains)
+  } catch (error) {
+    console.error(`Erro interno: ${error}`)
+    return res.status(500)
+  }
+});
+
+router.get("/domains/info/:domain", isAuthenticated, async (req, res) => {
+  try {
     const { domain } = req.params;
-    const assets = await IPAddress.readByDomain(domain);
+    const assets = await Domain.readByName(domain)
 
     if (!assets || assets.length === 0) {
       return res.status(404).json({
@@ -166,8 +221,39 @@ router.get("/scan/results/:domain", async (req, res) => {
   }
 });
 
-router.get("/dashboard/:domain", isAuthenticated, async (req, res) => {
-  
+router.get("/domains/statistics/:domain", async (req, res) => {
+  try {
+    const domain = req.params.domain
+    console.log(domain)
+    const module = await Module.readByName("Shodan");
+    const key = await API.readByModule(req.userId, module.id);
+
+    if (!module) {
+      return res.status(500).json({ message: "Adicione um módulo!" });
+    }
+
+    if (!domain) {
+      return res.status(400).json({ message: "Um domínio válido é requerido" });
+    }
+
+    if (!key) {
+      return res.status(400).json({ message: "API Key inválida. Verifique sua chave" });
+    }
+
+    const shodan = new Shodan(key.apiKey);
+    const databases = await shodan.count(`product:mysql,redis,mongodb,mariadb,postgresql,influxdb,ms-sql hostname:${domain}`);
+    const screenshots = await shodan.count(`product:"Remote Desktop Protocol" hostname:${domain}`);
+    const smb_exposures = await shodan.count(`product:samba "Authentication disabled" hostname:${domain}`);
+    const telnet_devices = await shodan.count(`port:23 "telnet" hostname:${domain}`);
+
+    return res.status(200).json({databases: databases, screenshots: screenshots, smb: smb_exposures, telnet:telnet_devices})
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Erro ao executar coleta"
+    });
+  }
 })
 
 router.post("/auth/signup", async (req, res) => {

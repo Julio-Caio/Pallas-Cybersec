@@ -15,6 +15,13 @@
   padding-top: 60px;
 }
 
+.logo {
+  color: aqua;
+  margin: .25em;
+  font-size: 1.3em;
+  padding-left: 1.2em;
+}
+
 .sidebar.active {
   width: 15em;
 }
@@ -26,14 +33,14 @@
 .sidebar a {
   border-radius: 0.4em;
   padding: 1em;
-  margin: 1.2em 0.6em 0.8em;
   max-height: 4em;
   max-width: 75%;
   text-decoration: none;
-  padding: 1em 1.4em 1.2em;
-  color: #acacac;
+  margin: .4em;
+  padding: 1em 1em 1em;
+  color: rgb(209, 239, 240);
   display: block;
-  transition: all 0.6s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .sidebar a:last-child {

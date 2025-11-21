@@ -48,7 +48,7 @@ document
 
         // Após 3 segundos, redireciona para a página de domínios
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          window.location.href = "/integrations";
         }, 1500);
       } else {
         alert("Não foi possível fazer login com esse usuário!");

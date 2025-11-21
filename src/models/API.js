@@ -1,4 +1,4 @@
-import prisma from "../database/database.js";
+import prisma from "../config/database.js";
 
 async function create({ apiKey, id_user, id_module, status }) {
   const createdAPI = await prisma.apiKey.create({

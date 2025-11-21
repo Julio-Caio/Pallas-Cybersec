@@ -111,107 +111,20 @@ form.addEventListener("submit", async (e) => {
   const value = doSubmit(e);
   if (!value) return;
 
-  // Feedback imediato
-  feedback.innerHTML = `
-    <div class="loading-msg">
-      <div class="spinner-border text-light" role="status"></div>
-      <p>Iniciando o escaneamento para <strong>${value}</strong>...</p>
-    </div>
-  `;
-
   try {
-    const res = await fetch(`/scan/start?domain=${value}`);
-    const json = await res.json();
+    const response = await fetch("http://localhost:3000/scan/start", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ domain: value.trim() }),
+    });
 
-    // -------------------------------
-    // 1) Resultado vindo do cache
-    // -------------------------------
-    if (res.status === 200 && json.source === "cache") {
-      feedback.innerHTML = `
-        <div class="loading-msg">
-          <i class="bi bi-check-circle-fill"></i>
-          <p>Resultado disponível em /dashboard!</p>
-        </div>
-      `;
-      console.log("CACHE:", json.results);
-      return;
-    }
-
-    // -------------------------------
-    // 2) Scan já está em execução
-    // -------------------------------
-    if (res.status === 202 && json.message.includes("já está")) {
-      feedback.innerHTML = `
-        <div class="loading-msg">
-          <div class="spinner-grow text-light" role="status"></div>
-          <p>Scan já em andamento... acompanhando progresso.</p>
-        </div>
-      `;
-      checkProgress(json.jobId);
-      return;
-    }
-
-    // -------------------------------
-    // 3) Novo scan iniciado
-    // -------------------------------
-    if (res.status === 202) {
-      feedback.innerHTML = `
-        <div class="loading-msg">
-          <div class="spinner-border text-light" role="status"></div>
-          <p>Novo scan iniciado! Acompanhando progresso...</p>
-        </div>
-      `;
-      checkProgress(json.jobId);
-      return;
-    }
+    const data = await response.json()
+    console.log(data)
 
   } catch (err) {
-    console.error(err);
-    showFeedback("Falha ao conectar ao servidor.", { type: "error" });
+    showFeedback("Falha na comunicação com o servidor.", { type: "error" });
   }
 });
-
-/**
- * Consulta o backend a cada 2s para saber como está o job
- */
-async function checkProgress(jobId) {
-  const interval = setInterval(async () => {
-    try {
-      const res = await fetch(`/scan/status/${jobId}`);
-      if (!res.ok) throw new Error("Erro ao consultar status");
-      const data = await res.json();
-
-      feedback.innerHTML = `
-        <div class="loading-msg">
-          <p>Status: <strong>${data.status}</strong></p>
-          <p>Progresso: <strong>${data.progress || 0}%</strong></p>
-          <div class="spinner-border text-light"></div>
-        </div>
-      `;
-
-      // Finalizado
-      if (data.status === "completed") {
-        clearInterval(interval);
-        feedback.innerHTML = `
-          <div class="loading-msg">
-            <i class="bi bi-check-circle-fill"></i>
-          </div>
-        `;
-
-        return;
-      }
-
-      // Falhou
-      if (data.status === "failed") {
-        clearInterval(interval);
-        showFeedback("O scan falhou.", { type: "error" });
-        return;
-      }
-
-    } catch (err) {
-      console.error(err);
-      clearInterval(interval);
-      showFeedback("Erro consultando progresso.", { type: "error" });
-    }
-  }, 2000);
-}

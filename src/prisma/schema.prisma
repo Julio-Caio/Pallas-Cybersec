@@ -37,24 +37,28 @@ model Module {
 
 model Domain {
   id         String     @id @default(uuid())
-  name       String    
-  ip         String
+  name       String     @unique
   created_at DateTime   @default(now())
   update_at  DateTime   @updatedAt
+
+  ips        IPAddress[]  // ← relação 1:N
 }
 
 model IPAddress {
-  id       String   @id @default(uuid())
-  ip       String
-  domain    String
+  id        String    @id @default(uuid())
+  ip        String
+  domainName String?  // FK → Domain.name
   domains   String[]
   hostnames String[]
-  asn      String?
-  country  String?
-  city     String?
-  org      String?
-  os       String?
-  ports    String? 
-  services String?
-  update_at  DateTime   @updatedAt
+  asn       String?
+  country   String?
+  city      String?
+  org       String?
+  os        String?
+  ports     String?
+  services  String?
+
+  update_at DateTime  @updatedAt
+
+  domain    Domain?   @relation(fields: [domainName], references: [name])
 }

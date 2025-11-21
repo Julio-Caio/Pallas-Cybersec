@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import router from './routes/routes.js';
+import prisma, { connect } from './config/database.js';
+import redis from './config/redis.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -38,7 +40,8 @@ server.use('/public/js', express.static(path.join(__dirname, '../public/js')));
 server.use('/public/css', express.static(path.join(__dirname, '../public/css')));
 server.use('/public/images', express.static(path.join(__dirname, '../public/images')));
 
-server.set('view engine', 'ejs')
+// Testando conexão com os bancos
+await connect()
 
 // Main routes
 server.use(router);
