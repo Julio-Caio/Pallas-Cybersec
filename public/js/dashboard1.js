@@ -9,10 +9,17 @@ const dateLastUpdate = document.getElementById("last-data-warning");
 const btnSelectDomain = document.getElementById("domain-select");
 const container = document.getElementById("container-card");
 
+const btnSelectFilter = document.getElementById("filter");
+const filterOptionsDiv = document.getElementById("filter-options");
+const checkboxes = document.querySelectorAll(
+  "#filter-options .form-check-input"
+);
+const cardAssetsDiv = document.getElementById("card-assets");
+
 /* -------------------------
    Criação dos Cards
 ------------------------- */
-function createCard(parent, number, desc) {
+function createCard(parent, number, desc, iconElement) {
   const value = number ?? "0";
 
   const cardElement = document.createElement("div");
@@ -30,7 +37,6 @@ function createCard(parent, number, desc) {
 
   const text = document.createTextNode(` ${desc} `);
   const icon = document.createElement("i");
-  icon.classList.add("bi", "bi-info-circle-fill");
 
   link.appendChild(title);
   link.appendChild(text);
@@ -140,6 +146,8 @@ function initDomainSelection() {
 
   const assets = await getItensbyDomain(e.target.value);
 
+  window.assets= assets
+
   const techStats = countByField(assets, "services");
   const portStats = countByField(assets, "ports");
 
@@ -153,6 +161,8 @@ function initDomainSelection() {
   // criar novos
   techChart = BarChart(techCtx, techStats);
   serviceChart = DoughnutChart(serviceCtx, portStats);
+
+  createAsset(assets)
 });
 }
 
@@ -162,10 +172,10 @@ function initDomainSelection() {
 function renderCards(stats) {
   container.innerHTML = "";
 
-  createCard(container, stats?.screenshots?.total, "Dispositivos com RDP");
-  createCard(container, stats?.telnet?.total, "Dispositivos com Telnet");
-  createCard(container, stats?.databases?.total, "Banco de Dados");
-  createCard(container, stats?.smb?.total, "Servidores SMB");
+  createCard(container, stats?.screenshots?.total, "Dispositivos com RDP", "bi-webcam-fill");
+  createCard(container, stats?.telnet?.total, "Dispositivos com Telnet", "bi-globe");
+  createCard(container, stats?.databases?.total, "Banco de Dados", "bi-database-exclamation");
+  createCard(container, stats?.smb?.total, "Servidores SMB", "bi bi-printer");
 }
 
 /* -------------------------
@@ -179,5 +189,92 @@ async function getItensbyDomain(domain) {
     console.log(`Erro ao importar os dados: ${error}`);
   }
 }
+
+// renderizar os cards de assets
+async function createAsset(list) {
+  cardAssetsDiv.innerHTML = ""; // limpa antes de renderizar
+  console.log(list)
+  list.forEach(asset => {
+    const hostnames = asset.hostnames
+      ? asset.hostnames.map(h => `<span class="badge text-bg-primary">${h}</span>`).join("")
+      : "";
+
+    const card = `
+      <div class="card subdomains mb-3">
+        <div class="card-header text-center fw-bold"><h3>${asset.ip || "N/A"}</h3></div>
+
+        <div class="card-body">
+          <span class="badge text-bg-success">product: ${asset.services}</span>
+          <span class="badge text-bg-warning">${asset.ip || "Sem IP"}</span>
+
+          ${hostnames}
+
+          <figure>
+            <br />
+            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas"
+              data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+              Checar detalhes
+            </button>
+
+            <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions"
+              aria-labelledby="offcanvasWithBothOptionsLabel">
+              <div class="offcanvas-header">
+                <h5 class="offcanvas-title">
+                  Detalhes do ativo
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+              </div>
+              <div class="offcanvas-body">
+                <p>Dados adicionais podem ser renderizados aqui.</p>
+              </div>
+            </div>
+          </figure>
+        </div>
+      </div>
+    `;
+
+    cardAssetsDiv.insertAdjacentHTML("beforeend", card);
+  });
+}
+
+// Filtros
+
+const databases = ["mysql", "postgresql", "mongodb", "redis", "influxdb", "ms-sql"];
+const remote_devices = ["OpenSSH", "VNC", "RealVNC Enterprise", "RealVNC Enterprise", "Remote Desktop Protocol"];
+//filtros dos principais web servers
+const web_servers = [
+  "nginx",
+  "Microsoft IIS httpd",
+  "Apache Tomcat/Coyote JSP engine",
+  "Apache Tomcat",
+  "Apache httpd"
+];
+
+
+function getValueCheckbox()
+{
+  const selected = [...checkboxes].find(cb=>cb.checked);
+  return selected ? selected.value : null
+}
+
+// filtro genérico que recebe como parâmetro o array de itens que o incluem
+function filterByProduct(arr, data) {
+  if (!arr) {
+    createAsset(data);
+    return;
+  }
+
+  const filtered = data.filter(a =>
+    arr.some(item =>
+      a.services.toLowerCase().includes(item.toLowerCase())
+    )
+  );
+
+  createAsset(filtered);
+}
+
+btnSelectFilter.addEventListener("click", () => {
+  filterOptionsDiv.classList.toggle("active");
+});
 
 initDomainSelection();

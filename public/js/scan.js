@@ -111,6 +111,15 @@ form.addEventListener("submit", async (e) => {
   const value = doSubmit(e);
   if (!value) return;
 
+  // mostra spinner
+  feedback.innerHTML = `
+    <div class="d-flex justify-content-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  `;
+
   try {
     const response = await fetch("http://localhost:3000/scan/start", {
       method: "POST",
@@ -121,20 +130,23 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify({ domain: value.trim() }),
     });
 
-    setTimeout(() => {
-      showFeedback("Realizando a busca... Aguarde alguns segundos", {
-        type: "status",
-      }),
-        5000;
-    });
-
     const data = await response.json();
 
+    // remove o spinner
+    feedback.innerHTML = "";
+
     if (data.redirect) {
-      window.location.href = data.redirect;
+      // UX: pequeno delay opcional
+      setTimeout(() => {
+        window.location.href = data.redirect;
+      }, 300);
       return;
     }
+
+    showFeedback("Nenhuma ação retornada pelo servidor.", { type: "error" });
+
   } catch (err) {
+    feedback.innerHTML = "";
     showFeedback("Falha na comunicação com o servidor.", { type: "error" });
   }
 });
