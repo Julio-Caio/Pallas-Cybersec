@@ -1,0 +1,175 @@
+:root {
+  --background: linear-gradient(
+    90deg,
+    rgb(16, 35, 66) 0%,
+    rgba(0, 0, 0, 1) 50%
+  );
+  --black-background: #000000;
+  --dark-gray: #141414;
+  --brown: #935f00;
+  --foreground: #171717;
+  --primary: #0d6efd;
+  --primary-foreground: #fff;
+  --border: #e5e7eb;
+  --muted-foreground: #555;
+  --radius: 0.1em;
+  --gradient-green: linear-gradient(
+    90deg,
+    rgba(0, 212, 146, 1) 0%,
+    rgba(22, 78, 61, 1) 71%
+  );
+}
+
+.filter {
+  border-radius: 0.2em;
+  padding: 0.2em;
+  width: 2.6em;
+  height: 2.6em;
+  align-items: center;
+  border: none;
+}
+
+.filter:hover {
+  background: rgb(223, 223, 223);
+}
+
+#filter-options {
+  background: whitesmoke;
+  height: 0;
+  overflow: hidden;
+  padding: 0 0.5em;
+  position: relative;
+  width: 30%;
+  margin-bottom: 1em;
+  border-radius: 0.1em;
+  transition: height 0.5s ease-in-out;
+}
+
+/* Quando ativado */
+#filter-options.active {
+  height: 9em;
+}
+
+#filter-options h4 {
+  padding-top: 0.5em;
+  font-size: 1em;
+  text-align: center;
+  font-weight: bold;
+}
+
+span {
+  margin-right: 1em;
+  font-size: 1em;
+}
+
+#org,
+#os,
+#hostnames,
+#port,
+#service {
+  margin-bottom: 0.8em;
+  background: #101a2b65;
+  border: 0.05em solid rgba(245, 245, 245, 0.253);
+  border-radius: 0.4em;
+  padding: 1em;
+}
+
+/*Offcanvas assets */
+
+.offcanvas {
+  padding: .5em;
+  background: #101a2b;
+}
+
+.offcanvas-title {
+  margin-top: .2em;
+}
+
+.offcanvas-header h3 {
+  margin-top: 1em;
+  font-size: 1.45em;
+  background: var(--dark-gray);
+  border-radius: .2em;
+  padding: .3em;
+  color: #e5e7eb;
+  font-weight: bold;
+}
+
+.offcanvas-body p {
+  font-size: 1.2em;
+  color: whitesmoke;
+  font-family: "JetBrains Mono", monospace;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.offcanvas-body #hostnames {
+  font-size: 1em;
+}
+
+#service {
+  min-height: 10em;
+}
+
+.offcanvas-body #hostnames ul li {
+  font-size: 1em;
+  font-weight: 600;
+  list-style: none;
+  padding: .4em;
+  background: var(--primary);
+  color: whitesmoke;
+  border-radius: 0.4em;
+  margin-bottom: 0.5em;
+}
+
+.org-name {
+  text-transform: uppercase;
+  background: #171717;
+  padding: 1em;
+}
+
+#port .port-number {
+  background: var(--gradient-green);
+  border: .1em solid whitesmoke;
+  border-radius: .15em;
+  padding: .5em;
+  text-align: center;
+  width: 4.5em;
+  height: 3em;
+}
+
+#service #app {
+  display: flex;
+  flex-direction: row;
+}
+
+
+.app-image{
+  width: 5em;
+  height: 4em;
+  border-radius: .25em;
+  padding: .1em;
+}
+
+#app p{
+  margin: 1em;
+  color: var(--primary-foreground);
+  font-size: 1em;
+  text-decoration: none;
+}
+
+#os-info {
+  display: flex;
+}
+
+.os-image{
+  width: 5em;
+  height: 4em;
+  border-radius: .25em;
+}
+
+#os p{
+  margin: .6em;
+  color: var(--primary-foreground);
+  text-decoration: none;
+}

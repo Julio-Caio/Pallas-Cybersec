@@ -36,6 +36,19 @@ async function readByDomain(domainName) {
   });
 }
 
+async function readByDomainID(domainId) {
+  return await prisma.iPAddress.findMany({
+    where: {
+      domain: {
+        id: domainId
+      }
+    },
+    include: {
+      domain: true
+    }
+  });
+}
+
 async function remove(id) {
   return await prisma.iPAddress.delete({ where: { id } });
 }

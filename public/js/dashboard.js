@@ -1,15 +1,23 @@
+import { BarChart } from "./components/charts/Bar.js";
 import { DoughnutChart } from "./components/charts/Doughnut.js";
-import { PieChart } from "./components/charts/Pie.js";
 
-const titleAssetSidebar = document.querySelector("#title-asset");
-export const containerPort = document.querySelector("#container-port");
-export const containerTech = document.querySelector("#tech-body");
+let techChart = null;
+let serviceChart = null;
 
+const dateLastUpdate = document.getElementById("last-data-warning");
+const btnSelectDomain = document.getElementById("domain-select");
+const container = document.getElementById("container-card");
 
-function createCard(component, number, desc) {
-  if (!number || typeof number === null || typeof number === undefined) {
-    number = "-/-";
-  }
+const cardAssetsDiv = document.getElementById("card-assets");
+const tabDivIPAddress = document.getElementById("ip_addr");
+tabDivIPAddress.appendChild(cardAssetsDiv);
+
+/* -------------------------
+   Criação dos Cards
+------------------------- */
+function createCard(parent, number, desc, iconElement) {
+  const value = number ?? "0";
+
   const cardElement = document.createElement("div");
   cardElement.classList.add("item-card");
 
@@ -21,11 +29,10 @@ function createCard(component, number, desc) {
   link.title = "Mais informações";
 
   const title = document.createElement("h2");
-  title.innerText = number;
+  title.innerText = value;
 
   const text = document.createTextNode(` ${desc} `);
   const icon = document.createElement("i");
-  icon.classList.add("bi", "bi-info-circle-fill");
 
   link.appendChild(title);
   link.appendChild(text);
@@ -33,151 +40,73 @@ function createCard(component, number, desc) {
   cardBodyElement.appendChild(link);
   cardElement.appendChild(cardBodyElement);
 
-  if (component) {
-    component.appendChild(cardElement);
+  parent.appendChild(cardElement);
+}
+
+/* -------------------------
+   Formatar data
+------------------------- */
+function formatarDataHoraBR(isoString) {
+  const data = new Date(isoString);
+
+  const opcoes = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+    timeZone: "America/Sao_Paulo",
+  };
+
+  return new Intl.DateTimeFormat("pt-BR", opcoes).format(data);
+}
+
+/* -------------------------
+   Popula o select
+------------------------- */
+function populateDomainSelect(item, last_update, domains) {
+  item.innerHTML = '<option value="">Selecione</option>';
+
+  domains.forEach((domain) => {
+    const option = document.createElement("option");
+    option.value = domain.name;
+    option.textContent = domain.name;
+    item.appendChild(option);
+  });
+
+  const last = domains[domains.length - 1];
+  if (last?.update_at) {
+    last_update.innerHTML = `<p class="m-3"><strong>Última varredura</strong>: 
+       <span class="text-warning">${formatarDataHoraBR(
+         last.update_at
+       )}</span></p>`;
   }
-
-  return cardElement;
 }
 
-const container = document.getElementById("container-card");
-
-function createWhoisCard(data) {
-  return `
-      <div class="container-more who-is-summary">
-        <div class="who-is-summary title">
-          <h4>Who Is</h4>
-        </div>
-        <div class="who-is-summary body">
-          <p><strong>Domain:</strong> ${data.domain}</p>
-          <p><strong>Owner:</strong> ${data.owner}</p>
-          <p><strong>Owner ID:</strong> ${data.ownerid}</p>
-          <p><strong>Responsible:</strong> ${data.responsible}</p>
-          <p><strong>Country:</strong> ${data.country}</p>
-          <p><strong>Nameservers:</strong> ${data.nserver}</p>
-        </div>
-      </div>
-    `;
-}
-
-async function getHostnames(assets) {
-  const hostnames = new Set();
-
-  for (const item of assets) {
-    if (item.hostnames && item.hostnames.length > 0) {
-      item.hostnames.forEach((hostname) => hostnames.add(hostname));
-    }
-  }
-  console.log("Hostnames únicos encontrados:", hostnames);
-  return Array.from(hostnames);
-}
-
-async function loadWhois(domain) {
+/* -------------------------
+   Buscar domínios
+------------------------- */
+async function fetchDomains() {
   try {
-    const response = await fetch(`http://localhost:3000/whois/${domain}`);
-    const data = await response.json();
-    createWhoisCard(data);
-  } catch (err) {
-    console.error("Erro ao buscar WHOIS:", err);
-  }
-}
+    const res = await fetch("/domains", {
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!res.ok) throw new Error("Erro ao buscar domínios.");
 
-const response = await fetch("http://localhost:3000/scan/start?domain=");
-const json = await response.json();
-export const assets = Array.isArray(json.data) ? json.data : [];
-const hostnames = await getHostnames(assets);
+    const domains = await res.json();
 
-container.appendChild(createCard(container, 0, "Banco de Dados"));
-container.appendChild(createCard(container, hostnames.length, "Hostnames"));
-container.appendChild(createCard(container, json.data.length, "Endereços IPs"));
-container.appendChild(createCard(container, 1, "Capturas de Tela"));
-
-async function getPorts(data) {
-  const ports = new Set();
-  for (const item of data) {
-    if (item.port) ports.add(item.port);
-  }
-  return Array.from(ports); // converte o Set em array
-}
-
-function createPortCard(ports) {
-  // cria o container principal
-  const container = document.createElement("div");
-  container.classList.add("container-more", "ports");
-
-  // título
-  const titleDiv = document.createElement("div");
-  titleDiv.classList.add("ports", "title");
-  titleDiv.innerHTML = `<h4 id="ports-title">Ports</h4>`;
-  container.appendChild(titleDiv);
-
-  // corpo
-  const bodyDiv = document.createElement("div");
-  bodyDiv.classList.add("ports", "body");
-
-  // adiciona cada porta como div
-  ports.forEach((port) => {
-    const portDiv = document.createElement("div");
-    portDiv.classList.add("port");
-    portDiv.textContent = port;
-    bodyDiv.appendChild(portDiv);
-  });
-
-  container.appendChild(bodyDiv);
-
-  // retorna o bloco completo (container + linha)
-  return container;
-}
-// 1️⃣ Obtém o container onde quer inserir
-// 2️⃣ Busca as portas e cria o card dinamicamente
-(async () => {
-  const ports = await getPorts(assets);
-  const portCard = createPortCard(ports);
-
-  // 3️⃣ Adiciona no container
-  containerPort.appendChild(portCard);
-})();
-
-async function getTech(assets) {
-  const techs = new Set();
-
-  for (const item of assets) {
-    if (item.product && item.product !== "—") {
-      techs.add(item.product);
+    if (!Array.isArray(domains)) {
+      console.warn("Resposta inválida de /domains");
+      return;
     }
+
+    populateDomainSelect(btnSelectDomain, dateLastUpdate, domains);
+  } catch (error) {
+    console.log("Erro ao carregar domínios", error);
   }
-
-  return Array.from(techs); // <-- transforma em array
 }
-
-const techs = await getTech(assets);
-
-function createTechCard(techList) {
-  const container = document.createElement("div");
-  container.classList.add("container-more", "tech");
-
-  const title = document.createElement("div");
-  title.classList.add("tech", "title", "text-light");
-  title.innerHTML = `<h4 id="tech-title">Technologies</h4>`;
-
-  const body = document.createElement("div");
-  body.classList.add("tech", "body");
-  body.id = "tech-body";
-
-  techList.forEach((t) => {
-    const div = document.createElement("div");
-    div.classList.add("technologies");
-    div.textContent = t;
-    body.appendChild(div);
-  });
-
-  container.appendChild(title);
-  container.appendChild(body);
-  return container;
-}
-
-const techCard = createTechCard(techs);
-containerTech.appendChild(techCard);
 
 function countByField(items, field) {
   const map = {};
@@ -193,94 +122,186 @@ function countByField(items, field) {
   return map;
 }
 
-// 1. Conta tecnologias
-const techStats = countByField(assets, "product");
-const PortStats = countByField(assets, "port");
+fetchDomains();
 
-// 3. Renderiza
-const techCtx = document.getElementById("top-technologies");
-PieChart(techCtx, techStats);
+/* -------------------------
+   Dados estatísticos
+------------------------- */
+async function fetchStatisticsData(target) {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/domains/statistics/${target}`
+    );
+    return await res.json();
+  } catch (err) {
+    console.error("Erro na requisição:", err);
+  }
+}
 
-const serviceCtx = document.getElementById("top-services");
-DoughnutChart(serviceCtx, PortStats);
+function initDomainSelection() {
+  btnSelectDomain.addEventListener("change", async (e) => {
+    if (!e.target.value) return;
 
-function createAccordionItem(data) {
-  const collapseId = `collapse-${data.ip.replace(/\./g, "-")}`;
+    const stats = await fetchStatisticsData(e.target.value);
+    renderCards(stats);
 
-  return `
-    <div class="accordion-item">
-      <h2 class="accordion-header">
-        <button class="accordion-button collapsed" 
-          type="button" 
-          data-bs-toggle="collapse" 
-          data-bs-target="#${collapseId}" 
-          aria-expanded="false" 
-          aria-controls="${collapseId}">
-          ${data.ip}
-        </button>
-      </h2>
+    const assets = await getItensbyDomain(e.target.value);
 
-      <div id="${collapseId}" 
-        class="accordion-collapse collapse" 
-        data-bs-parent="#accordionExample">
-        <div class="accordion-body">
-          <strong>IP:</strong> ${data.ip}<br>
-          <strong>Hostname:</strong> ${data.hostnames?.join(", ") || "—"}<br>
+    window.assets = assets;
 
-          <button 
-  type="button" 
-  class="btn btn-primary mt-3 btn-details"
-  data-ip="${data.ip}">
-  Detalhes
-</button>
+    const techStats = countByField(assets, "services");
+    const portStats = countByField(assets, "ports");
 
+    const techCtx = document.getElementById("top-technologies");
+    const serviceCtx = document.getElementById("top-services");
+
+    // destruir gráficos anteriores
+    if (techChart) techChart.destroy();
+    if (serviceChart) serviceChart.destroy();
+
+    // criar novos
+    techChart = BarChart(techCtx, techStats);
+    serviceChart = DoughnutChart(serviceCtx, portStats);
+
+    createAsset(assets);
+  });
+}
+
+/* -------------------------
+   Renderizar cards
+------------------------- */
+function renderCards(stats) {
+  container.innerHTML = "";
+
+  createCard(
+    container,
+    stats?.screenshots?.total,
+    "RDP HABILITADO",
+    "bi-webcam-fill"
+  );
+  createCard(container, stats?.telnet?.total, "TELNET HABILITADO", "bi-globe");
+  createCard(
+    container,
+    stats?.databases?.total,
+    "BANCO DE DADOS",
+    "bi-database-exclamation"
+  );
+  createCard(container, stats?.smb?.total, "SMB EXPOSTO", "bi bi-printer");
+}
+
+/* -------------------------
+   Buscar itens por domínio
+------------------------- */
+async function getItensbyDomain(domain) {
+  try {
+    const res = await fetch(`http://localhost:3000/scan/results/${domain}`);
+    return res.json();
+  } catch (error) {
+    console.log(`Erro ao importar os dados: ${error}`);
+  }
+}
+
+// renderizar os cards de assets
+async function createAsset(list) {
+  cardAssetsDiv.innerHTML = "";
+
+  list.forEach((asset) => {
+    const hostnames = asset.hostnames
+      ? asset.hostnames.map((h) => `<li>${h}</li>`)
+      : "";
+
+    // 🔥 Cria ID único baseado no IP
+    const offcanvasId = `offcanvas-${(asset.ip || crypto.randomUUID()).replace(
+      /[^a-zA-Z0-9]/g,
+      ""
+    )}`;
+    const labelId = `${offcanvasId}-label`;
+
+    const card = `
+      <div class="card assets mb-3">
+        <div class="card-header text-center fw-bold"><h3>${
+          asset.ip || "N/A"
+        }</h3></div>
+
+        <div class="card-body">
+          <span class="badge text-bg-warning">port: ${asset.ports}</span>
+          <span class="badge text-bg-success">product: ${
+            asset.services !== null ? asset.services : "N/A"
+          }</span>
+
+          <figure>
+            <br />
+
+            <!-- O botão aponta para o ID único -->
+            <button class="btn btn-primary" type="button" 
+              data-bs-toggle="offcanvas"
+              data-bs-target="#${offcanvasId}"
+              aria-controls="${offcanvasId}">
+              Checar detalhes
+            </button>
+
+            <!-- Offcanvas com ID único -->
+            <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1"
+              id="${offcanvasId}" aria-labelledby="${labelId}">
+
+              <div class="offcanvas-header">
+                <h3 class="offcanvas-title" id="${labelId}">
+                  ${asset.ip}
+                </h3>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+              </div>
+              <hr>
+              <div class="offcanvas-body">
+                <div id="org">
+                  <p>ORGANIZAÇÃO:</p>
+                  <p class="org-name">${asset.org}</p>
+                </div>
+                <div id="port">
+                  <p>PORTA:</p>
+                  <p class="port-number">${asset.ports}</p>
+                </div>
+                                <div id="service">
+                  <p>SERVIÇOS:</p>
+                  <div id="app">
+                    ${
+                      asset.services !== null
+                        ? `
+                            <img class="app-image" src="images/services/${asset.services}.svg" alt="Imagem: ${asset.services}">
+                            <p>${asset.services}</p>
+                          `
+                        : `<p>N/A</p>`
+                    }
+                  </div>
+                </div>
+                <div id="os">
+                  <p>SISTEMA OPERACIONAL:</p>
+                  <div id="os-info">
+                    ${
+                      asset.os !== null
+                        ? `
+                            <img class="app-image" src="images/operating_systems/${asset.os}.svg" alt="${asset.os}">
+                            <p>${asset.os}</p>
+                          `
+                        : `<p>N/A</p>`
+                    }
+                  </div>
+                </div>
+                <div id="hostnames">
+                  <p>HOSTNAMES:</p>
+                  <ul>
+                    ${hostnames}
+                  </ul>
+                </div>
+              </div>
+
+            </div>
+          </figure>
         </div>
       </div>
-    </div>
-  `;
+    `;
+
+    cardAssetsDiv.insertAdjacentHTML("beforeend", card);
+  });
 }
 
-const html = assets.map((item) => createAccordionItem(item)).join("");
-document.getElementById("tabContents").innerHTML = html;
-
-function openSidebarWithItem(asset) {
-  titleAssetSidebar.innerHTML = `Ativo: <span class="text-danger text-bold"><ins>${asset.ip}</ins></span>`;
-
-  containerPort.innerHTML = "";
-  containerTech.innerHTML = "";
-
-  // WHOIS
-  if (asset.domains?.length) {
-    loadWhois(asset.domains[0]);
-  }
-
-  // PORTAS
-  const ports = [asset.port];
-  const portCard = createPortCard(ports);
-  containerPort.appendChild(portCard);
-
-  // TECNOLOGIAS
-  const techs = asset.product && asset.product !== "—" ? [asset.product] : [];
-  const techCard = createTechCard(techs);
-  containerTech.appendChild(techCard);
-
-  // AQUI você dispara o evento que abre a sidebar
-  document.querySelector("#more-info").classList.add("active");
-}
-
-// evento para abrir a sidebar respectiva de cada item
-document.addEventListener("click", (event) => {
-  const btn = event.target.closest(".btn-details");
-  if (!btn) return;
-
-  const ip = btn.dataset.ip;
-
-  const asset = assets.find((a) => a.ip === ip);
-
-  if (!asset) {
-    console.error("Asset não encontrado:", ip);
-    return;
-  }
-
-  openSidebarWithItem(asset);
-});
+initDomainSelection();

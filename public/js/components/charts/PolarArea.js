@@ -6,7 +6,7 @@ const chartOptions = {
       position: "left",
       labels: {
         font: {
-          size: 16,
+          size: 18,
           weight: "bold", 
           family: "Arial, sans-serif", 
         },
