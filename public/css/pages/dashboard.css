@@ -362,7 +362,7 @@ h3 {
   flex: 1;
 }
 
-.item canvas {
+canvas {
   justify-items: center;
   display: block;
   inset: 0; /* ocupa toda a área do .item */
@@ -531,4 +531,8 @@ select {
   padding: 6px 12px;
   border: 1px solid #ccc;
   border-top: none;
+}
+
+.top-databases {
+  max-height: 14em;
 }

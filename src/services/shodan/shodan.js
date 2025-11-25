@@ -13,9 +13,21 @@ class Shodan {
     this.searchOpts = { minify: true };
   }
 
-  async search(query) {
+  async search(query, opts = {}) {
     try {
-      return await shodan.search(query, this.apiKey, this.searchOpts);
+      return await shodan.search(query, this.apiKey, {
+        ...this.searchOpts,
+        ...opts,
+      });
+    } catch (err) {
+      console.error("Shodan search error:", err);
+      throw new HTTPError(500, "Erro ao consultar Shodan (search)");
+    }
+  }
+
+  async searchTokens(query, opts) {
+    try {
+      return await shodan.searchTokens(query, this.apiKey, opts);
     } catch (err) {
       console.error("Shodan search error:", err);
       throw new HTTPError(500, "Erro ao consultar Shodan (search)");
@@ -42,7 +54,7 @@ class Shodan {
 
   async searchDatabases(target) {
     const query = `product:mysql,redis,mongodb,mariadb,postgresql,influxdb,ms-sql hostname:${target}`;
-    return this.search(query);
+    return this.search(query, { facets: "product:5" });
   }
 
   async searchScreenshots(target) {

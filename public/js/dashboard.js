@@ -10,6 +10,7 @@ const container = document.getElementById("container-card");
 
 const cardAssetsDiv = document.getElementById("card-assets");
 const tabDivIPAddress = document.getElementById("ip_addr");
+const tabDatabases = document.getElementById("databases");
 tabDivIPAddress.appendChild(cardAssetsDiv);
 
 /* -------------------------
@@ -138,6 +139,129 @@ async function fetchStatisticsData(target) {
   }
 }
 
+function normalizeDatabaseAssets(data) {
+  if (!data || !data.matches) return [];
+  return data.matches;
+}
+
+/* -------------------------
+   Renderizar Subdomínios
+------------------------- */
+async function renderSubdomains(list) {
+  const container = document.getElementById("subdomains");
+
+  if (!container) {
+    console.error("❌ Div #subdomains não encontrada");
+    return;
+  }
+
+  container.innerHTML = "";
+
+  if (!Array.isArray(list) || list.length === 0) {
+    container.innerHTML = `
+      <p class="text-muted">Nenhum subdomínio encontrado.</p>
+    `;
+    return;
+  }
+
+  list.forEach((item) => {
+    const host = item.hostnames || "Desconhecido";
+    const ip = item.ip || "—";
+    const org = item.org || "—";
+    const tech = item.services || "—";
+    const port = item.ports || "—";
+
+    host.forEach((host) => {
+      const card = `
+      <div class="card card-subdomain mb-3 shadow-sm">
+        <div class="card-header card-subdomain fw-bold">
+          ${host}
+        </div>
+        <div class="card-subdomain card-body">
+
+          <p class="mb-1"><strong>IP:</strong> ${ip}</p>
+
+          <p class="mb-1"><strong>Serviço / Tecnologia:</strong> ${tech}</p>
+
+         <span class="badge text-bg-warning">port: ${port}</span>
+
+          <p class="mb-0"><strong>Organização:</strong> ${org}</p>
+
+        </div>
+      </div>
+    `;
+
+    container.insertAdjacentHTML("beforeend", card);
+    })
+  });
+}
+
+
+/* -------------------------
+   Renderizar Databases
+------------------------- */
+
+async function renderDatabases(list) {
+  const container = document.getElementById("databases");
+  container.innerHTML = "";
+
+  list.forEach((asset) => {
+    const hostnames = asset.hostnames?.length
+      ? asset.hostnames
+          .map((h) => `<span class="badge text-bg-primary me-1">${h}</span>`)
+          .join("")
+      : `<span class="text-muted">Sem hostnames</span>`;
+
+    const card = `
+      <div class="card mb-3 shadow-sm">
+       <div class="card-header text-start fw-bold">
+        ${asset.ip_str}
+        </div>
+        <div class="card-body">
+
+          <h5 class="card-title">${asset.product || "Desconhecido"}</h5>
+          
+          <p class="card-text mb-1">
+            <strong>Porta:</strong> ${asset.port || "-"}
+          </p>
+
+          <p class="card-text mb-1">
+            <strong>Hostnames:</strong><br>${hostnames}
+          </p>
+
+          <p class="card-text mb-1">
+            <strong>Organização:</strong> ${asset.org || "-"}
+          </p>
+
+          <p class="card-text mb-0">
+            <strong>OS:</strong> ${asset.os || "-"}
+          </p>
+
+        </div>
+      </div>
+    `;
+
+    container.insertAdjacentHTML("beforeend", card);
+  });
+}
+
+async function fetchFacetsDatabases(target) {
+  try {
+    const res = await fetch(
+      `http://localhost:3000/domains/facets/databases/${target}`
+    );
+    return await res.json();
+  } catch (err) {
+    console.error("Erro na requisição:", err);
+  }
+}
+
+async function loadDatabases(domain) {
+  const raw = await fetchFacetsDatabases(domain); // sua função de fetch
+  const list = normalizeDatabaseAssets(raw);
+  await renderDatabases(list);
+}
+
 function initDomainSelection() {
   btnSelectDomain.addEventListener("change", async (e) => {
     if (!e.target.value) return;
@@ -160,10 +284,12 @@ function initDomainSelection() {
     if (serviceChart) serviceChart.destroy();
 
     // criar novos
-    techChart = BarChart(techCtx, techStats);
+    techChart = DoughnutChart(techCtx, techStats);
     serviceChart = DoughnutChart(serviceCtx, portStats);
 
     createAsset(assets);
+    renderSubdomains(assets)
+    await loadDatabases(e.target.value);
   });
 }
 
@@ -299,7 +425,6 @@ async function createAsset(list) {
         </div>
       </div>
     `;
-
     cardAssetsDiv.insertAdjacentHTML("beforeend", card);
   });
 }

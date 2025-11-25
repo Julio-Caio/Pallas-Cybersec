@@ -109,15 +109,17 @@
       <h3 class="text-center">Top Tecnologias Utilizadas</h3>
       <hr />
       <canvas id="top-technologies"></canvas>
+      </div>
     </div>
     </section>
     <br />
     <h2 class="text-center fs-3">Ativos Encontrados</h2>
     <hr />
     <!--tabs-->
-    <div class="tab">
+    <div class="tab" id="inventory">
       <button class="tablinks" onclick="openAsset(event, 'ip_addr')">Endereços IP</button>
       <button class="tablinks" onclick="openAsset(event, 'subdomains')">Subdomínios</button>
+      <button class="tablinks" onclick="openAsset(event, 'databases')">Banco de Dados</button>
     </div>
 
     <!-- Tab contents -->
@@ -128,16 +130,19 @@
     <div id="subdomains" class="tabcontent">
 
     </div>
+
+    <div id="databases" class="tabcontent">
+
+    </div>
     <br>
     <!-- assets -->
     <div id="card-assets">
       <div class="card assets mb-3">
         <div class="card-header text-center fw-bold">
-          <h3>${asset.ip || "N/A"}</h3>
         </div>
 
         <div class="card-body">
-          <span class="badge text-bg-success">product: ${asset.services}</span>
+          <span class="badge text-bg-success"></span>
           <figure>
             <br />
 
@@ -153,7 +158,6 @@
 
               <div class="offcanvas-header">
                 <h3 class="offcanvas-title" id="${labelId}">
-                  ${asset.ip}
                 </h3>
                 <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
               </div>
@@ -161,23 +165,21 @@
               <div class="offcanvas-body">
                 <div id="org">
                   <p>ORGANIZAÇÃO:</p>
-                  ${asset.org}
                 </div>
                 <div id="port">
                   <p>PORTA:</p>
-                  ${asset.port}
                 </div>
                 <div id="os">
                   <p>SISTEMA OPERACIONAL:</p>
                   <div id="os-info">
                     <img class="os-image" src="images/operating_systems/debian-svgrepo-com.svg" alt="">
-                    <p>${asset.os}</p>
+                    <p></p>
                   </div>
                 </div>
                 <div id="hostnames">
                   <p>HOSTNAMES:</p>
                   <ul>
-                    <li>${asset.hostnames}</li>
+                    <li></li>
                   </ul>
                 </div>
                 <div id="service">

@@ -277,6 +277,58 @@ router.get("/domains/statistics/:domain", async (req, res) => {
   }
 });
 
+router.get("/domains/facets/databases/:domain", async (req, res) => {
+  try {
+    const domain = req.params.domain;
+    const CACHE_KEY = `shodan:facets:db:${domain}`;
+    
+    // Verificar se existe uma mesma entrada no redis
+    const cached = await redis.get(CACHE_KEY);
+
+    if (cached) {
+      console.log("📦 Cache HIT (databases facets)");
+      return res.status(200).json(JSON.parse(cached));
+    }
+
+    console.log("🔍 Cache MISS → Consultando Shodan...");
+
+    // Validar módulo e key
+    const module = await Module.readByName("Shodan");
+    const key = await API.readByModule(req.userId, module.id);
+
+    if (!module) {
+      return res.status(500).json({ message: "Adicione um módulo!" });
+    }
+
+    if (!domain) {
+      return res.status(400).json({ message: "Um domínio válido é requerido" });
+    }
+
+    if (!key) {
+      return res
+        .status(400)
+        .json({ message: "API Key inválida. Verifique sua chave" });
+    }
+
+    const shodan = new Shodan(key.apiKey);
+    const data = await shodan.searchDatabases(domain);
+
+    // 4) Armazenar em cache por **1 dia**
+    await redis.set(CACHE_KEY, JSON.stringify(data), "EX", 86400); // 24h
+
+    const facets = data.facets?.product || [];
+
+    return res.status(200).json(facets);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Erro ao executar coleta",
+    });
+  }
+});
+
+
 router.post("/auth/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;

@@ -49,22 +49,6 @@
   border: none;
 }
 
-.accordion-button {
-  background-color: #2a2a2a;
-  color: #eee;
-  border: none;
-}
-
-.accordion-button.active,
-.accordion-button:hover {
-  background-color: #3a3a3a;
-  color: var(--primary-color);
-}
-
-.accordion-body {
-  display: flex;
-  flex-direction: column;
-  background-color: #1a1a1a;
-  color: #eee;
-  border-top: 1px solid #333;
+.badge {
+  font-size: 1em;
 }

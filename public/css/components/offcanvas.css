@@ -20,43 +20,6 @@
   );
 }
 
-.filter {
-  border-radius: 0.2em;
-  padding: 0.2em;
-  width: 2.6em;
-  height: 2.6em;
-  align-items: center;
-  border: none;
-}
-
-.filter:hover {
-  background: rgb(223, 223, 223);
-}
-
-#filter-options {
-  background: whitesmoke;
-  height: 0;
-  overflow: hidden;
-  padding: 0 0.5em;
-  position: relative;
-  width: 30%;
-  margin-bottom: 1em;
-  border-radius: 0.1em;
-  transition: height 0.5s ease-in-out;
-}
-
-/* Quando ativado */
-#filter-options.active {
-  height: 9em;
-}
-
-#filter-options h4 {
-  padding-top: 0.5em;
-  font-size: 1em;
-  text-align: center;
-  font-weight: bold;
-}
-
 span {
   margin-right: 1em;
   font-size: 1em;
@@ -126,10 +89,16 @@ span {
   text-transform: uppercase;
   background: #171717;
   padding: 1em;
+  font-size: .85em;
+}
+
+#port {
+  display: flex;
+  flex-direction: column;
 }
 
 #port .port-number {
-  background: var(--gradient-green);
+  background: var(--primary);
   border: .1em solid whitesmoke;
   border-radius: .15em;
   padding: .5em;
@@ -172,4 +141,18 @@ span {
   margin: .6em;
   color: var(--primary-foreground);
   text-decoration: none;
+}
+
+.card-subdomain .card-header {
+  border: 1px solid #0d6efd;
+}
+
+.card .card-subdomain {
+  background: #1e293b;
+  padding: .8em;
+  color: whitesmoke;
+}
+
+.badge {
+  margin-bottom: .3em;
 }
