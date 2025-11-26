@@ -1,4 +1,5 @@
-const sidebar = document.getElementById("sidebar");
+const sidebar = document.getElementById("collapseSidebar");
+const sidebarBtn = document.getElementById('toggleSidebarButton');
 
 function toggleSidebar() {
   if (sidebar.classList.contains('active')) {
@@ -9,3 +10,16 @@ function toggleSidebar() {
     sidebar.style.width = '15em';
   }
 }
+
+sidebarBtn.addEventListener('click', ()=> {
+  toggleSidebar()
+})
+
+document.addEventListener('DOMContentLoaded', function() {
+  const sidebar = document.getElementById('sidebar');
+  const sidebarBtn = document.getElementById('toggleSidebarButton');
+  
+  if (sidebar && sidebarBtn) {
+    sidebarBtn.addEventListener('click', toggleSidebar);
+  }
+});

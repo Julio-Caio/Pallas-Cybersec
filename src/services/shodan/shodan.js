@@ -54,7 +54,7 @@ class Shodan {
 
   async searchDatabases(target) {
     const query = `product:mysql,redis,mongodb,mariadb,postgresql,influxdb,ms-sql hostname:${target}`;
-    return this.search(query, { facets: "product:5" });
+    return this.search(query);
   }
 
   async searchScreenshots(target) {

@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import path from "path";
 import redis from "../config/redis.js";
+import { rateLimit } from 'express-rate-limit'
 
 // Models
 import API from "../models/API.js";
@@ -28,6 +29,16 @@ import Shodan from "../services/shodan/shodan.js";
 import Domain from "../models/Domain.js";
 
 dotenv.config();
+
+// limiter -> use to many requests for an endpoint
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+	limit: 50, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+	ipv6Subnet: 64, // Set to 60 or 64 to be less aggressive, or 52 or 48 to be more aggressive
+  message: { error: 'Too many requests, please try again later.'}
+})
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
@@ -69,6 +80,10 @@ router.get("/scan", isAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "../../public/scan.html"));
 });
 
+router.get("/reports", isAuthenticated, (req, res) => {
+  res.status(200).send('<h1>Estamos em desenvolvimento ;)</h1>');
+});
+
 router.get("/403-forbidden", (req, res) => {
   res.status(403).sendFile(path.join(__dirname, "../../public/403.html"));
 });
@@ -89,7 +104,7 @@ router.get("/500-internal-server-error", (req, res) => {
     );
 });
 
-router.get("/whois/:domain", isAuthenticated, async (req, res) => {
+router.get("/api/whois/:domain", isAuthenticated, async (req, res) => {
   try {
     const domain = req.params.domain;
     const data = await whoisQuery(domain);
@@ -110,7 +125,7 @@ router.get("/whois/:domain", isAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/scan/start", isAuthenticated, async (req, res) => {
+router.post("/api/scan/start", limiter, isAuthenticated, async (req, res) => {
   try {
     const { domain } = req.body;
 
@@ -184,7 +199,7 @@ router.post("/scan/start", isAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/scan/results/:domain", async (req, res) => {
+router.get("/api/scan/results/:domain", async (req, res) => {
   try {
     const { domain } = req.params;
     const results = await IPAddress.readByDomain(domain);
@@ -195,7 +210,7 @@ router.get("/scan/results/:domain", async (req, res) => {
   }
 });
 
-router.get("/domains", isAuthenticated, async (req, res) => {
+router.get("/api/domains", isAuthenticated, async (req, res) => {
   try {
     const myDomains = await Domain.readAll();
     if (myDomains.length === 0 || !myDomains) {
@@ -208,7 +223,7 @@ router.get("/domains", isAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/domains/info/:domain", isAuthenticated, async (req, res) => {
+router.get("/api/domains/info/:domain", isAuthenticated, async (req, res) => {
   try {
     const { domain } = req.params;
     const assets = await Domain.readByName(domain);
@@ -226,7 +241,7 @@ router.get("/domains/info/:domain", isAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/domains/statistics/:domain", async (req, res) => {
+router.get("/api/domains/statistics/:domain", async (req, res) => {
   try {
     const domain = req.params.domain;
     console.log(domain);
@@ -277,7 +292,7 @@ router.get("/domains/statistics/:domain", async (req, res) => {
   }
 });
 
-router.get("/domains/facets/databases/:domain", async (req, res) => {
+router.get("/api/domains/facets/databases/:domain", isAuthenticated, async (req, res) => {
   try {
     const domain = req.params.domain;
     const CACHE_KEY = `shodan:facets:db:${domain}`;
@@ -329,7 +344,7 @@ router.get("/domains/facets/databases/:domain", async (req, res) => {
 });
 
 
-router.post("/auth/signup", async (req, res) => {
+router.post("/auth/signup", limiter, async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -368,7 +383,7 @@ router.post("/auth/signup", async (req, res) => {
   }
 });
 
-router.post("/auth/login", async (req, res) => {
+router.post("/auth/login", limiter, async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -448,7 +463,7 @@ router.post("/api/modules", isAuthenticated, async (req, res) => {
   }
 });
 
-router.get("/integrations/keys", isAuthenticated, async (req, res) => {
+router.get("/api/integrations/keys", isAuthenticated, async (req, res) => {
   try {
     const id_user = req.user.userId;
     const integrations = await API.readAllByUser(id_user);
@@ -474,7 +489,7 @@ router.get("/integrations/keys", isAuthenticated, async (req, res) => {
   }
 });
 
-router.post("/integrations/keys", isAuthenticated, async (req, res) => {
+router.post("/api/integrations/keys", limiter, isAuthenticated, async (req, res) => {
   try {
     const { apiKey, module } = req.body;
     const apiKeyTrim = apiKey.trim(); // remove white spaces
@@ -514,7 +529,7 @@ router.post("/integrations/keys", isAuthenticated, async (req, res) => {
 });
 
 // Delete Integration
-router.delete("/integrations/keys/:id", isAuthenticated, async (req, res) => {
+router.delete("/api/integrations/keys/:id", isAuthenticated, async (req, res) => {
   try {
     const { id } = req.params;
     const id_user = req.user.userId;

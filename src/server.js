@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import morgan from 'morgan';
 import router from './routes/routes.js';
 import { connect } from './config/database.js';
@@ -15,20 +14,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const server = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.WEBAPP_PORT || 3000;
 const HOST = process.env.HOST || 'localhost';
 
 server.use(morgan('dev'));
-
-// CORS Configuration
-server.use(
-  cors({
-    origin: ['http://localhost:3000','http://localhost:5500'],
-    methods: 'GET,HEAD,OPTIONS,PUT,POST,DELETE',
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-  })
-);
 
 server.use(express.urlencoded({extended: false}))
 server.use(express.json())
@@ -41,6 +30,9 @@ server.use('/public/images', express.static(path.join(__dirname, '../public/imag
 
 // Testando conexão com os bancos
 await connect()
+
+// Habilitar o "trust proxy" para que o Express utilize o X-Forwarded-For
+server.set('trust proxy', 1)
 
 // Main routes
 server.use(router);

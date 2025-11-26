@@ -1,4 +1,3 @@
-import { BarChart } from "./components/charts/Bar.js";
 import { DoughnutChart } from "./components/charts/Doughnut.js";
 
 let techChart = null;
@@ -7,11 +6,7 @@ let serviceChart = null;
 const dateLastUpdate = document.getElementById("last-data-warning");
 const btnSelectDomain = document.getElementById("domain-select");
 const container = document.getElementById("container-card");
-
 const cardAssetsDiv = document.getElementById("card-assets");
-const tabDivIPAddress = document.getElementById("ip_addr");
-const tabDatabases = document.getElementById("databases");
-tabDivIPAddress.appendChild(cardAssetsDiv);
 
 /* -------------------------
    Criação dos Cards
@@ -91,7 +86,7 @@ function populateDomainSelect(item, last_update, domains) {
 ------------------------- */
 async function fetchDomains() {
   try {
-    const res = await fetch("/domains", {
+    const res = await fetch("/api/domains", {
       headers: { "Content-Type": "application/json" },
     });
     if (!res.ok) throw new Error("Erro ao buscar domínios.");
@@ -131,7 +126,7 @@ fetchDomains();
 async function fetchStatisticsData(target) {
   try {
     const res = await fetch(
-      `http://localhost:3000/domains/statistics/${target}`
+      `/api/domains/statistics/${target}`
     );
     return await res.json();
   } catch (err) {
@@ -204,8 +199,17 @@ async function renderSubdomains(list) {
 async function renderDatabases(list) {
   const container = document.getElementById("databases");
   container.innerHTML = "";
+  console.log(list)
+  console.log(list.total)
+  if (list.total === 0) {
+    container.innerHTML = `
+      <div class="alert alert-warning">Nenhum banco de dados encontrado</div>
+    `;
+    return;
+  }
 
-  list.forEach((asset) => {
+  // Agora iteramos sobre matches
+  list.matches.forEach((asset) => {
     const hostnames = asset.hostnames?.length
       ? asset.hostnames
           .map((h) => `<span class="badge text-bg-primary me-1">${h}</span>`)
@@ -248,7 +252,7 @@ async function renderDatabases(list) {
 async function fetchFacetsDatabases(target) {
   try {
     const res = await fetch(
-      `http://localhost:3000/domains/facets/databases/${target}`
+      `/api/domains/facets/databases/${target}`
     );
     return await res.json();
   } catch (err) {
@@ -258,8 +262,7 @@ async function fetchFacetsDatabases(target) {
 
 async function loadDatabases(domain) {
   const raw = await fetchFacetsDatabases(domain); // sua função de fetch
-  const list = normalizeDatabaseAssets(raw);
-  await renderDatabases(list);
+  await renderDatabases(raw);
 }
 
 function initDomainSelection() {
@@ -289,7 +292,7 @@ function initDomainSelection() {
 
     createAsset(assets);
     renderSubdomains(assets)
-    await loadDatabases(e.target.value);
+    loadDatabases(e.target.value);
   });
 }
 
@@ -320,7 +323,7 @@ function renderCards(stats) {
 ------------------------- */
 async function getItensbyDomain(domain) {
   try {
-    const res = await fetch(`http://localhost:3000/scan/results/${domain}`);
+    const res = await fetch(`http://localhost/api/scan/results/${domain}`);
     return res.json();
   } catch (error) {
     console.log(`Erro ao importar os dados: ${error}`);

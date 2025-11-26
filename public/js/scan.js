@@ -121,7 +121,7 @@ form.addEventListener("submit", async (e) => {
   `;
 
   try {
-    const response = await fetch("http://localhost:3000/scan/start", {
+    const response = await fetch("http://localhost/api/scan/start", {
       method: "POST",
       credentials: "include",
       headers: {

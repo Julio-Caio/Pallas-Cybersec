@@ -1,251 +1,271 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard | CyberSec</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard | CyberSec</title>
+    <!--Bootstrap-->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
 
-  <!--Bootstrap-->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
-    rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
-  <!-- Bootstrap Icons -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="css/dashboard.css" />
+    <!-- Leaflet (Map )-->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
 
-  <!-- Leaflet (Map )-->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Styles -->
+    <link rel="stylesheet" href="./css/components/tabs.css" />
+    <link rel="stylesheet" href="./css/components/offcanvas.css" />
+    <link rel="stylesheet" href="./css/components/sidebar/sidebar.css" />
+    <link rel="stylesheet" href="./css/pages/dashboard.css" />
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="css/components/tabs.css" />
-  <link rel="stylesheet" href="css/components/offcanvas.css">
-  <link rel="stylesheet" href="css/components/sidebar/sidebar.css" />
-  <link rel="stylesheet" href="css/pages/dashboard.css" />
+    <link rel="stylesheet" href="./css/components/footer.css" />
 
-  <link rel="stylesheet" href="css/components/footer.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Michroma&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Michroma&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Anton&display=swap");
+    </style>
+  </head>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=Michroma&display=swap");
-    @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Michroma&display=swap");
-    @import url("https://fonts.googleapis.com/css2?family=Anton&display=swap");
-  </style>
-</head>
-
-<body>
-  <header>
-    <button class="btn btn-dark ms-3" id="toggleSidebarButton" onclick="toggleSidebar()">
-      <i class="bi bi-list"></i>
-    </button>
-  </header>
-  <div id="collapseSidebar" class="sidebar sidebar">
-    <span class="closebtn text-light" onclick="toggleSidebar()">×</span>
-    <a href="/" class="nav-item"><i class="bi bi-house"></i> Home</a>
-    <a href="#" class="nav-item active"><i class="bi bi-columns-gap"></i> Dashboard</a>
-    <a href="/scan" class="nav-item"><i class="bi bi-fingerprint"></i> Scan</a>
-    <a href="/integrations" class="nav-item"><i class="bi bi-plus-circle"></i> Integrações</a>
-    <a href="/reports" class="nav-item"><i class="bi bi-printer-fill"></i> Relatórios</a>
-    <a href="/logout" class="nav-item"><i class="bi bi-box-arrow-left"></i> Sair</a>
-  </div>
-  <br />
-  <main>
-    <div class="select-domain">
-      <label for="domain-select" class="text-light m-3">Informe um domínio:</label>
-      <select class="form-select" id="domain-select" aria-label="Default select example"></select>
+  <body>
+    <header>
+      <button class="btn btn-dark ms-3" id="toggleSidebarButton">
+        <i class="bi bi-list"></i>
+      </button>
+    </header>
+    <div id="collapseSidebar" class="sidebar sidebar">
+      <span id="closebtn" class="closebtn text-light">×</span>
+      <a href="/" class="nav-item"><i class="bi bi-house"></i> Home</a>
+      <a href="#" class="nav-item active"
+        ><i class="bi bi-columns-gap"></i> Dashboard</a
+      >
+      <a href="/modules" class="nav-item active"
+        ><i class="bi bi-hammer"></i> Ferramentas</a
+      >
+      <a href="/scan" class="nav-item"
+        ><i class="bi bi-fingerprint"></i> Scan</a
+      >
+      <a href="/integrations" class="nav-item"
+        ><i class="bi bi-plus-circle"></i> Integrações</a
+      >
+      <a href="/reports" class="nav-item"
+        ><i class="bi bi-printer-fill"></i> Relatórios</a
+      >
+      <a href="/logout" class="nav-item"
+        ><i class="bi bi-box-arrow-left"></i> Sair</a
+      >
     </div>
-    <span id="last-data-warning">Nenhum domínio selecionado</span>
-    <section id="container-card" class="container-card grid">
-      <div class="item-card">
-        <div class="item-card-body">
-          <a href="#inventory" title="Mais informações">
-            <h2>-/-</h2>
-            <span>RDP Habilitado</span>
-            <i class="bi bi-webcam-fill"></i>
-          </a>
-        </div>
-      </div>
-      <div class="item-card">
-        <div class="item-card-body">
-          <a href="#inventory" title="Mais informações">
-            <h2>-/-</h2>
-            <span> Telnet Habilitado </span>
-            <i class="bi bi-globe"></i>
-          </a>
-        </div>
-      </div>
-      <div class="item-card">
-        <div class="item-card-body">
-          <a href="#inventory" title="Mais informações">
-            <h2>-/-</h2>
-            <span> Banco de Dados</span>
-            <i class="bi bi-database-exclamation"></i>
-          </a>
-        </div>
-      </div>
-      <div class="item-card">
-        <div class="item-card-body">
-          <a href="#inventory" title="Mais informações">
-            <h2>-/-</h2>
-            <span> SMB Exposto</span>
-            <i class="bi bi-printer"></i>
-          </a>
-        </div>
-      </div>
-    </section>
     <br />
-    <section class="container-chart grid grid-template">
-      <div class="item">
-        <h3 class="text-center">Top Portas</h3>
-        <hr />
-        <canvas id="top-services"></canvas>
+    <main>
+      <div class="select-domain">
+        <label for="domain-select" class="text-light m-3"
+          >Informe um domínio:</label
+        >
+        <select
+          class="form-select"
+          id="domain-select"
+          aria-label="Default select example"
+        ></select>
       </div>
-      <div class="item">
-      <h3 class="text-center">Top Tecnologias Utilizadas</h3>
+      <span id="last-data-warning">Nenhum domínio selecionado</span>
+      <section id="container-card" class="container-card grid">
+        <div class="item-card">
+          <div class="item-card-body">
+            <a href="#inventory" title="Mais informações">
+              <h2>-/-</h2>
+              <span>RDP Habilitado</span>
+              <i class="bi bi-webcam-fill"></i>
+            </a>
+          </div>
+        </div>
+        <div class="item-card">
+          <div class="item-card-body">
+            <a href="#inventory" title="Mais informações">
+              <h2>-/-</h2>
+              <span> Telnet Habilitado </span>
+              <i class="bi bi-globe"></i>
+            </a>
+          </div>
+        </div>
+        <div class="item-card">
+          <div class="item-card-body">
+            <a href="#inventory" title="Mais informações">
+              <h2>-/-</h2>
+              <span> Banco de Dados</span>
+              <i class="bi bi-database-exclamation"></i>
+            </a>
+          </div>
+        </div>
+        <div class="item-card">
+          <div class="item-card-body">
+            <a href="#inventory" title="Mais informações">
+              <h2>-/-</h2>
+              <span> SMB Exposto</span>
+              <i class="bi bi-printer"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+      <br />
+      <section class="container-chart grid grid-template">
+        <div class="item">
+          <h3 class="text-center">Top Portas</h3>
+          <hr />
+          <canvas id="top-services"></canvas>
+        </div>
+        <div class="item">
+          <h3 class="text-center">Top Tecnologias Utilizadas</h3>
+          <hr />
+          <canvas id="top-technologies"></canvas>
+        </div>
+      </section>
+      <br />
+      <h2 class="text-center fs-3">Ativos Encontrados</h2>
       <hr />
-      <canvas id="top-technologies"></canvas>
+      <!--tabs-->
+      <div class="tab" id="inventory">
+        <button class="tablinks" data-target="ip_addr">Endereços IP</button>
+        <button class="tablinks" data-target="subdomains">Hostnames</button>
+        <button class="tablinks" data-target="databases">Banco de Dados</button>
       </div>
-    </div>
-    </section>
-    <br />
-    <h2 class="text-center fs-3">Ativos Encontrados</h2>
-    <hr />
-    <!--tabs-->
-    <div class="tab" id="inventory">
-      <button class="tablinks" onclick="openAsset(event, 'ip_addr')">Endereços IP</button>
-      <button class="tablinks" onclick="openAsset(event, 'subdomains')">Subdomínios</button>
-      <button class="tablinks" onclick="openAsset(event, 'databases')">Banco de Dados</button>
-    </div>
 
-    <!-- Tab contents -->
-    <div id="ip_addr" class="tabcontent">
+      <!-- Tab contents -->
+      <div id="ip_addr" class="tabcontent"></div>
 
-    </div>
+      <div id="subdomains" class="tabcontent"></div>
 
-    <div id="subdomains" class="tabcontent">
+      <div id="databases" class="tabcontent"></div>
+      <br />
+      <!-- assets -->
+      <div id="card-assets">
+        <div class="card assets mb-3">
+          <div class="card-header text-center fw-bold"></div>
 
-    </div>
+          <div class="card-body">
+            <span class="badge text-bg-success"></span>
+            <figure>
+              <br />
 
-    <div id="databases" class="tabcontent">
+              <!-- O botão aponta para o ID único -->
+              <button
+                class="btn btn-primary"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#${offcanvasId}"
+                aria-controls="${offcanvasId}"
+              >
+                Checar detalhes
+              </button>
 
-    </div>
-    <br>
-    <!-- assets -->
-    <div id="card-assets">
-      <div class="card assets mb-3">
-        <div class="card-header text-center fw-bold">
-        </div>
-
-        <div class="card-body">
-          <span class="badge text-bg-success"></span>
-          <figure>
-            <br />
-
-            <!-- O botão aponta para o ID único -->
-            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#${offcanvasId}"
-              aria-controls="${offcanvasId}">
-              Checar detalhes
-            </button>
-
-            <!-- Offcanvas com ID único -->
-            <div class="offcanvas offcanvas-end" data-bs-scroll="true" tabindex="-1" id="${offcanvasId}"
-              aria-labelledby="${labelId}">
-
-              <div class="offcanvas-header">
-                <h3 class="offcanvas-title" id="${labelId}">
-                </h3>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-              </div>
-              <hr>
-              <div class="offcanvas-body">
-                <div id="org">
-                  <p>ORGANIZAÇÃO:</p>
+              <!-- Offcanvas com ID único -->
+              <div
+                class="offcanvas offcanvas-end"
+                data-bs-scroll="true"
+                tabindex="-1"
+                id="${offcanvasId}"
+                aria-labelledby="${labelId}"
+              >
+                <div class="offcanvas-header">
+                  <h3 class="offcanvas-title" id="${labelId}"></h3>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="offcanvas"
+                  ></button>
                 </div>
-                <div id="port">
-                  <p>PORTA:</p>
-                </div>
-                <div id="os">
-                  <p>SISTEMA OPERACIONAL:</p>
-                  <div id="os-info">
-                    <img class="os-image" src="images/operating_systems/debian-svgrepo-com.svg" alt="">
-                    <p></p>
+                <hr />
+                <div class="offcanvas-body">
+                  <div id="org">
+                    <p>ORGANIZAÇÃO:</p>
+                  </div>
+                  <div id="port">
+                    <p>PORTA:</p>
+                  </div>
+                  <div id="os">
+                    <p>SISTEMA OPERACIONAL:</p>
+                    <div id="os-info">
+                      <img class="os-image" src="" alt="" />
+                      <p></p>
+                    </div>
+                  </div>
+                  <div id="hostnames">
+                    <p>HOSTNAMES:</p>
+                    <ul>
+                      <li></li>
+                    </ul>
+                  </div>
+                  <div id="service">
+                    <p>SERVIÇOS:</p>
+                    <div id="app">
+                      <img class="app-image" src="" alt="" />
+                      <p></p>
+                    </div>
                   </div>
                 </div>
-                <div id="hostnames">
-                  <p>HOSTNAMES:</p>
-                  <ul>
-                    <li></li>
-                  </ul>
-                </div>
-                <div id="service">
-                  <p>SERVIÇOS:</p>
-                  <div id="app">
-                    <img class="app-image" src="images/services/web/nginx-svgrepo-com.svg" alt="">
-                    <p>${asset.services}</p>
-                  </div>
-                </div>
               </div>
-            </div>
-          </figure>
+            </figure>
+          </div>
         </div>
       </div>
-    </div>
-  </main>
-  <!-- FOOTER -->
-  <footer class="footer bg-dark">
-    <div class="container footer-top">
-      <div class="logo">Pallas</div>
+    </main>
+    <!-- FOOTER -->
+    <footer class="footer bg-dark">
+      <div class="container footer-top">
+        <div class="logo">Pallas</div>
 
-      <nav class="footer-nav">
-        <a href="#">Home</a>
-        <a href="#">Serviços</a>
-        <a href="#">Docs</a>
-      </nav>
+        <nav class="footer-nav">
+          <a href="#">Home</a>
+          <a href="#">Serviços</a>
+          <a href="#">Docs</a>
+        </nav>
 
-      <div class="socials">
-        <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-        <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-        <a href="https://github.com/Julio-Caio" target="_blank" aria-label="Website"><i class="bi bi-github"></i></a>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+          <a
+            href="https://github.com/Julio-Caio"
+            target="_blank"
+            aria-label="Website"
+            ><i class="bi bi-github"></i
+          ></a>
+        </div>
       </div>
-    </div>
-    <hr />
-    <div class="footer-bottom">
-      <p>© 2025 Pallas CyberSec, Inc. All rights reserved.</p>
-    </div>
-  </footer>
-  <script type="module" src="js/dashboard.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-    crossorigin="anonymous"></script>
-  <script src="css/components/sidebar/sidebar.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    function openAsset(evt, assetName) {
-      // Declare all variables
-      var i, tabcontent, tablinks;
-
-      // Get all elements with class="tabcontent" and hide them
-      tabcontent = document.getElementsByClassName("tabcontent");
-      for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-      }
-
-      // Get all elements with class="tablinks" and remove the class "active"
-      tablinks = document.getElementsByClassName("tablinks");
-      for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-      }
-
-      // Show the current tab, and add an "active" class to the button that opened the tab
-      document.getElementById(assetName).style.display = "block";
-      evt.currentTarget.className += " active";
-    } 
-  </script>
-</body>
-
+      <hr />
+      <div class="footer-bottom">
+        <p>© 2025 Pallas CyberSec, Inc. All rights reserved.</p>
+      </div>
+    </footer>
+    <script type="module" src="js/dashboard.js"></script>
+    <script src="js/sidebar.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </body>
 </html>

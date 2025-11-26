@@ -1,28 +1,25 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
 
 const prisma = new PrismaClient({
+  adapter,
   log: ["query", "info", "warn", "error"],
 });
 
-export async function connect(retries = 5, interval = 2000) {
-  while (retries > 0) {
+export async function connect() {
     try {
       await prisma.$connect();
       console.log("✅ Prisma conectado ao PostgreSQL");
       return;
     } catch (err) {
-      console.warn(`⚠️ Falha ao conectar. Tentativas restantes: ${retries - 1}`);
-      console.warn(err);
-
-      retries--;
-      if (retries === 0) break;
-
-      await new Promise(r => setTimeout(r, interval));
-    }
-  } 
-
-  console.error("❌ Não foi possível conectar após várias tentativas.");
-  process.exit(1);
+      console.warn(
+        `⚠️ Falha ao conectar ao PostgreSQL`
+      );
+  }
 }
 
 export default prisma;

@@ -4,7 +4,7 @@
 const sidebar = document.getElementById("sidebar");
 const toggleBtn = document.getElementById("toggle-sidebar");
 const moduleList = document.getElementById("module-list");
-const baseUrl = "http://localhost:3000/api/modules";
+const baseUrl = "http://localhost/api/modules";
 const visibleModules = new Set();
 
 // =========================

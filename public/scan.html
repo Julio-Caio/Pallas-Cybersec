@@ -40,23 +40,19 @@
         <h2 class="logo michroma-regular">Pallas</h2>
       </a>
       <div class="flex-grow-1 position-relative"></div>
-      <button
-        class="btn btn-dark ms-3"
-        id="toggleSidebarButton"
-        onclick="toggleSidebar()"
-      >
+      <button class="btn btn-dark ms-3" id="toggleSidebarButton">
         <i class="bi bi-list"></i>
       </button>
     </header>
     <div class="app">
-      <div id="sidebar" class="sidebar sidebar">
-        <span class="closebtn text-light" onclick="toggleSidebar()">×</span>
+      <div id="collapseSidebar" class="sidebar sidebar">
         <a href="/" class="nav-item"><i class="bi bi-house"></i> Home</a>
         <a href="/dashboard" class="nav-item active"
           ><i class="bi bi-columns-gap"></i> Dashboard</a
         >
-        <a href="#" class="nav-item"
-          ><i class="bi bi-fingerprint"></i> Scan</a
+        <a href="#" class="nav-item"><i class="bi bi-fingerprint"></i> Scan</a>
+        <a href="/modules" class="nav-item active"
+          ><i class="bi bi-hammer"></i> Ferramentas</a
         >
         <a href="/integrations" class="nav-item"
           ><i class="bi bi-plus-circle"></i> Integrações</a
@@ -97,19 +93,15 @@
             <button class="action-btn" data-value="testphp.vulnweb.com">
               testphp.vulnweb.com
             </button>
-            <button class="action-btn" data-value="nmap.org">
-              nmap.org
-            </button>
+            <button class="action-btn" data-value="nmap.org">nmap.org</button>
           </div>
 
           <p class="info-text">
-            Escaneie os domínios da sua empresa para descobrir
-            possíveis vulnerabilidades
+            Escaneie os domínios da sua empresa para descobrir possíveis
+            vulnerabilidades
           </p>
 
-          <div id="feedback">
-
-          </div>
+          <div id="feedback"></div>
         </div>
       </main>
     </div>

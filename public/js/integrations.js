@@ -4,7 +4,7 @@
 const sidebar = document.getElementById("sidebar");
 const toggleBtn = document.getElementById("toggle-sidebar");
 const integrationList = document.getElementById("integration-list");
-const baseUrl = "http://localhost:3000/integrations/keys";
+const baseUrl = "/api/integrations/keys";
 const visibleKeys = new Set();
 const btnSelectModule = document.getElementById("module-select")
 

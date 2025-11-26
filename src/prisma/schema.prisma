@@ -1,64 +1,9 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
-model UserAccount {
-  id          String   @id @default(uuid())
-  name        String
-  email       String   @unique
-  password    String
-  created_at  DateTime @default(now())
-  apiKeys     ApiKey[]
-}
-
-model ApiKey {
-  id         String   @id @default(uuid())
-  apiKey     String
-  id_user    String
-  id_module  String?
-  created_at DateTime @default(now())
-  status     Boolean  @default(true)
-
-  user   UserAccount @relation(fields: [id_user], references: [id])
-  module Module?     @relation(fields: [id_module], references: [id])
-}
-
-model Module {
-  id      String   @id @default(uuid())
-  name    String   @unique
-  desc    String?
-  apiKeys ApiKey[]
-}
-
-model Domain {
-  id         String       @id @default(uuid())
-  name       String       @unique
-  created_at DateTime     @default(now())
-  update_at  DateTime     @updatedAt
-
-  ips        IPAddress[]  // Relação 1:N
-}
-
-model IPAddress {
-  id        String    @id @default(uuid())
-  ip        String
-  domainId  String
-  domains   String[]
-  hostnames String[]
-  asn       String?
-  country   String?
-  city      String?
-  org       String?
-  os        String?
-  ports     String?
-  services  String?
-
-  update_at DateTime  @updatedAt
-
-  domain     Domain   @relation(fields: [domainId], references: [id])
-}

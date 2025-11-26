@@ -5,7 +5,7 @@ async function initializeMap(domain) {
 
   try {
     // Tenta buscar coordenadas do domínio
-    const resp = await fetch(`http://localhost:3000/api/whois/geo/${domain}`);
+    const resp = await fetch(`http://localhost/api/whois/geo/${domain}`);
     if (!resp.ok) throw new Error(`Erro HTTP ${resp.status}`);
     const data = await resp.json();
     coords = { latitude: data.latitude, longitude: data.longitude };
@@ -16,7 +16,7 @@ async function initializeMap(domain) {
   // Se não obteve coords, tenta pegar IP público do usuário
   if (!coords) {
     try {
-      const resp = await fetch(`http://localhost:3000/api/my-ip`);
+      const resp = await fetch(`http://localhost/api/my-ip`);
       const ipData = await resp.json();
 
       // Aqui você precisaria chamar sua função getCoordinates com o IP
